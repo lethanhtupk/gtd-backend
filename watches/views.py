@@ -1,4 +1,16 @@
-from django.db.models import query
+from rest_framework.reverse import reverse
+from rest_framework.response import Response
+from rest_framework import generics
+
+# permission classes
+from rest_framework.permissions import (
+  IsAuthenticated
+)
+from gtd_backend.custompermission import (
+  IsAdmin
+)
+
+# serializer classes and model classes
 from watches.serializers import (
   ProductSerializer, SellerSerializer,
   WatchSerializer,  
@@ -7,9 +19,7 @@ from watches.models import (
   Seller, Watch,
   Product,
 )
-from rest_framework import generics, serializers 
-from rest_framework.reverse import reverse
-from rest_framework.response import Response
+
 from users.views import (
   ProfileList,
 )
@@ -33,6 +43,7 @@ class ProductDetail(generics.RetrieveAPIView):
 class WatchList(generics.ListCreateAPIView):
   queryset = Watch.objects.all()
   serializer_class = WatchSerializer
+  permission_classes = (IsAuthenticated,)
   name = 'watch-list'
   # TODO: only owner and admin can get the list of watches
 
@@ -54,7 +65,8 @@ class WatchDestroy(generics.DestroyAPIView):
   queryset = Watch.objects.all()
   serializer_class = WatchSerializer
   name = 'watch-destroy'
-  # TODO: only allow admin to delete watch instance 
+  # TODO: only allow admin to delete watch instance
+  permissions = (IsAdmin)
 
 class ApiRoot(generics.GenericAPIView):
   name = 'api-root'

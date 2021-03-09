@@ -27,26 +27,26 @@ class WatchSerializer(serializers.ModelSerializer):
     fields = '__all__'
   
   def to_internal_value(self, data):
-    product_id = data['product']
-    headers = {
-      'authority': 'scrapeme.live',
-      'dnt': '1',
-      'upgrade-insecure-requests': '1',
-      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
-      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-      'sec-fetch-site': 'none',
-      'sec-fetch-mode': 'navigate',
-      'sec-fetch-user': '?1',
-      'sec-fetch-dest': 'document',
-      'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-    }
-    response = requests.get(f"https://tiki.vn/api/v2/products/{product_id}", headers=headers)
-    if response.status_code != 200:
-      raise serializers.ValidationError({'product': 'Cannot found the product with that ID'})
-    product_data = response.json()
-    if data['expected_price'] > product_data['price']:
-      raise serializers.ValidationError({'expected_price': 'expected_price cannot smaller than current price'})
     try:
+      product_id = data['product']
+      headers = {
+        'authority': 'scrapeme.live',
+        'dnt': '1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'sec-fetch-site': 'none',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-user': '?1',
+        'sec-fetch-dest': 'document',
+        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+      }
+      response = requests.get(f"https://tiki.vn/api/v2/products/{product_id}", headers=headers)
+      if response.status_code != 200:
+        raise serializers.ValidationError({'product': 'Cannot found the product with that ID'})
+      product_data = response.json()
+      if data['expected_price'] > product_data['price']:
+        raise serializers.ValidationError({'expected_price': 'expected_price cannot smaller than current price'})
       seller = product_data['current_seller']
       obj, created = Seller.objects.get_or_create(
         id=seller['id'], 
