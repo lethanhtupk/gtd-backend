@@ -45,10 +45,7 @@ class WatchSerializer(serializers.ModelSerializer):
         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
       }
       response = requests.get(f"https://tiki.vn/api/v2/products/{product_id}", headers=headers)
-      print(product_id)
-      print(response)
       if response.status_code != 200:
-        print('running in condition')
         raise serializers.ValidationError({'product': 'Cannot found the product with that ID'})
       product_data = response.json()
       if data['expected_price'] > product_data['price']:
