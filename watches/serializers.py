@@ -2,8 +2,11 @@ from django.db import models
 import requests
 from rest_framework import serializers 
 from watches.models import (
-  Product, Seller,
-  Watch
+  Watch,
+)
+from products.models import (
+  Product,
+  Seller,
 )
 from django.contrib.auth.models import User
 
@@ -42,7 +45,10 @@ class WatchSerializer(serializers.ModelSerializer):
         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
       }
       response = requests.get(f"https://tiki.vn/api/v2/products/{product_id}", headers=headers)
+      print(product_id)
+      print(response)
       if response.status_code != 200:
+        print('running in condition')
         raise serializers.ValidationError({'product': 'Cannot found the product with that ID'})
       product_data = response.json()
       if data['expected_price'] > product_data['price']:
@@ -68,10 +74,10 @@ class WatchSerializer(serializers.ModelSerializer):
         product_group_name=product_data['productset_group_name'],
         description=product_data['description'],
       )
-    except:
-      raise serializers.ValidationError({'message': 'something went wrong'})
-    finally:
       return super().to_internal_value(data)
+
+    except Exception as e:
+      raise e
 
 class UserSerializer(serializers.ModelSerializer):
   watches = WatchSerializer(

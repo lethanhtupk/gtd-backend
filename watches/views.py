@@ -1,3 +1,4 @@
+from users import serializers
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework import generics
@@ -12,11 +13,17 @@ from gtd_backend.custompermission import (
 
 # serializer classes and model classes
 from watches.serializers import (
-  ProductSerializer, SellerSerializer,
   WatchSerializer,  
 )
+from products.serializers import (
+  ProductSerializer, 
+  SellerSerializer,
+)
 from watches.models import (
-  Seller, Watch,
+  Watch,
+)
+from products.models import (
+  Seller,
   Product,
 )
 

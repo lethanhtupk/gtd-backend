@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'watches.apps.WatchesConfig',
     'users.apps.UsersConfig',
+    'products.apps.ProductsConfig',
 ]
 
 MIDDLEWARE = [
