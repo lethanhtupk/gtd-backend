@@ -18,15 +18,6 @@ class WatchSerializer(serializers.ModelSerializer):
     model = Watch
     fields = '__all__'
   
-  # TODO: disallow to create 2 or more watches with same product ID 
-
-  def create(self, validated_data):
-    product = validated_data.pop('product')
-    watch = Watch.objects.get(product=product)
-    if watch:
-      raise serializers.ValidationError({'product': 'Cannot create 2 watches with the same product ID'})
-    return super().create(validated_data)
-  
   def to_internal_value(self, data):
     try:
       product_id = data.get('product')

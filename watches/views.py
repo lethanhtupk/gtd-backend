@@ -62,6 +62,15 @@ class WatchList(generics.ListCreateAPIView):
     serializer = WatchSerializer(queryset, many=True)
     return Response(serializer.data)
 
+  def create(self, request, *args, **kwargs):
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    product = serializer.data.get('product')
+    watches = Watch.objects.filter(product=product, owner=request.user)
+    if len(watches) > 0:
+      raise serializers.ValidationError({'product': 'Cannot create 2 watches with the same product ID'})
+    return super().create(request, *args, **kwargs)
+
   def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
 
