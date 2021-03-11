@@ -13,10 +13,19 @@ import json
 
 class WatchSerializer(serializers.ModelSerializer):
 
-  owner = serializers.ReadOnlyField(source='owner.username')
+  owner = serializers.ReadOnlyField(source='owner.email')
   class Meta:
     model = Watch
     fields = '__all__'
+  
+  # TODO: disallow to create 2 or more watches with same product ID 
+
+  # def create(self, validated_data):
+  #   product = validated_data.pop('product')
+  #   watch = Watch.objects.get(product=product)
+  #   if watch:
+  #     raise serializers.ValidationError({'product': 'Cannot create 2 watches with the same product ID'})
+  #   return super().create(validated_data)
   
   def to_internal_value(self, data):
     try:
@@ -26,6 +35,7 @@ class WatchSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError({'product': 'required field'})
       if not expected_price:
         raise serializers.ValidationError({'expected_price': 'required field'})
+
       headers = {
         'authority': 'scrapeme.live',
         'dnt': '1',
@@ -38,19 +48,26 @@ class WatchSerializer(serializers.ModelSerializer):
         'sec-fetch-dest': 'document',
         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
       }
+
       response = requests.get(f"https://tiki.vn/api/v2/products/{product_id}", headers=headers)
       if response.status_code != 200:
         raise serializers.ValidationError({'product': "cannot find any product with that ID"})
+
       product_data = response.json()
-      if int(data['expected_price']) > int(product_data['price']):
+
+      if int(data.get('expected_price')) > int(product_data.get('price')):
         raise serializers.ValidationError({'expected_price': 'expected_price cannot smaller than current price'})
-      seller = product_data['current_seller']
-      obj, created = Seller.objects.get_or_create(
-        id=seller['id'], 
-        name=seller['name'], 
-        link=seller['link'],
-        logo=seller['logo'],
-      )
+      
+      # FIXME: handle when seller is null
+      seller = product_data.get('current_seller')
+      obj = None
+      if seller:
+        obj, created = Seller.objects.get_or_create(
+          id=seller['id'], 
+          name=seller['name'], 
+          link=seller['link'],
+          logo=seller['logo'],
+        )
       Product.objects.update_or_create(
         seller=obj,
         id=product_data['id'], 
@@ -65,18 +82,24 @@ class WatchSerializer(serializers.ModelSerializer):
         product_group_name=product_data['productset_group_name'],
         description=product_data['description'],
       )
+      
+      # FIXME: sometimes, tiki api automatically get rid of alphabet character to calling correct product 
+      # like product_id=2099555a will get the data of product with id=2099555
+      # TODO: reassign product value for watch instance
+      data['product'] = product_data['id']
+
       return super().to_internal_value(data)
 
     except Exception as e:
       raise e
 
-# class UserSerializer(serializers.ModelSerializer):
-#   watches = WatchSerializer(
-#     many=True,
-#     read_only=True,
-#   )
+class UserSerializer(serializers.ModelSerializer):
+  watches = WatchSerializer(
+    many=True,
+    read_only=True,
+  )
 
-#   class Meta:
-#     model = User
-#     fields = '__all__'
+  class Meta:
+    model = User
+    fields = '__all__'
 
