@@ -1,27 +1,16 @@
-from django.db import models
-import requests
 from rest_framework import serializers 
 from watches.models import (
-  Watch,
+  Watch
 )
 from products.models import (
   Product,
   Seller,
 )
 from django.contrib.auth.models import User
+# third party library
+import requests
+import json 
 
-class ProductDetailSerializer(serializers.ModelSerializer):
-
-  class Meta:
-    model = Product
-    fields = '__all__'
-
-
-class SellerSerializer(serializers.ModelSerializer):
-  products = ProductDetailSerializer(many=True, read_only=True)
-  class Meta:
-    model = Seller
-    fields = '__all__'
 class WatchSerializer(serializers.ModelSerializer):
 
   owner = serializers.ReadOnlyField(source='owner.username')
@@ -31,7 +20,12 @@ class WatchSerializer(serializers.ModelSerializer):
   
   def to_internal_value(self, data):
     try:
-      product_id = data['product']
+      product_id = data.get('product')
+      expected_price = data.get('expected_price')
+      if not product_id:
+        raise serializers.ValidationError({'product': 'required field'})
+      if not expected_price:
+        raise serializers.ValidationError({'expected_price': 'required field'})
       headers = {
         'authority': 'scrapeme.live',
         'dnt': '1',
@@ -46,9 +40,9 @@ class WatchSerializer(serializers.ModelSerializer):
       }
       response = requests.get(f"https://tiki.vn/api/v2/products/{product_id}", headers=headers)
       if response.status_code != 200:
-        raise serializers.ValidationError({'product': 'Cannot found the product with that ID'})
+        raise serializers.ValidationError({'product': "cannot find any product with that ID"})
       product_data = response.json()
-      if data['expected_price'] > product_data['price']:
+      if int(data['expected_price']) > int(product_data['price']):
         raise serializers.ValidationError({'expected_price': 'expected_price cannot smaller than current price'})
       seller = product_data['current_seller']
       obj, created = Seller.objects.get_or_create(
@@ -76,19 +70,13 @@ class WatchSerializer(serializers.ModelSerializer):
     except Exception as e:
       raise e
 
-class UserSerializer(serializers.ModelSerializer):
-  watches = WatchSerializer(
-    many=True,
-    read_only=True,
-  )
+# class UserSerializer(serializers.ModelSerializer):
+#   watches = WatchSerializer(
+#     many=True,
+#     read_only=True,
+#   )
 
-  class Meta:
-    model = User
-    fields = '__all__'
+#   class Meta:
+#     model = User
+#     fields = '__all__'
 
-class ProductSerializer(serializers.ModelSerializer):
-
-  watches = WatchSerializer(many=True, read_only=True)
-  class Meta: 
-    model = Product
-    fields = '__all__'
