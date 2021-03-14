@@ -18,11 +18,6 @@ urlpatterns = [
     name=views.WatchDetail.name
   ),
   path(
-    'sellers/',
-    views.SellerList.as_view(),
-    name=views.SellerList.name
-  ),
-  path(
     '',
     views.ApiRoot.as_view(),
     name=views.ApiRoot.name
