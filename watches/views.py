@@ -16,7 +16,6 @@ from watches.serializers import (
   WatchSerializer,  
 )
 from products.serializers import (
-  ProductSerializer, 
   SellerSerializer,
 )
 from watches.models import (
@@ -31,22 +30,10 @@ from users.views import (
   ProfileList,
 )
 # Create your views here.
-
-class ProductList(generics.ListCreateAPIView):
-  queryset = Product.objects.all()
-  serializer_class = ProductSerializer
-  name = 'product-list'
-
 class SellerList(generics.ListCreateAPIView):
   queryset = Seller.objects.all()
   serializer_class = SellerSerializer
   name = 'seller-list'
-
-class ProductDetail(generics.RetrieveAPIView):
-  queryset = Product.objects.all()
-  serializer_class = ProductSerializer
-  name = 'product-detail'
-
 class WatchList(generics.ListCreateAPIView):
   queryset = Watch.objects.all()
   serializer_class = WatchSerializer
