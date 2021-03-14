@@ -9,7 +9,7 @@ from users.serializers import UserProfileSerializer
 # import permission classes
 from gtd_backend.custompermission import (
   IsAdmin,
-  IsAdminOrOwner,
+  IsAdminOrProfileOwner,
 )
 from rest_framework.permissions import IsAuthenticated
 
@@ -28,7 +28,7 @@ class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
   queryset = UserProfile.objects.all()
   serializer_class = UserProfileSerializer
   name = 'profile-detail'
-  permission_classes = (IsAuthenticated, IsAdminOrOwner)
+  permission_classes = (IsAuthenticated, IsAdminOrProfileOwner)
 
   def perform_update(self, serializer):
     if self.request.user.profile.role != 3:
