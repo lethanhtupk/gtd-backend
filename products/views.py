@@ -6,7 +6,7 @@ from products.models import (
   Seller,
 )
 from products.serializers import (
-  ProductCreateSerializer, ProductSerializer
+  ProductCreateSerializer, ProductSerializer, SellerSerializer
 )
 from rest_framework.response import Response
 from rest_framework import serializers
@@ -122,3 +122,29 @@ class ProductDestroy(generics.DestroyAPIView):
   queryset = Product.objects.all()
   serializer_class = ProductSerializer
   permission_classes = (IsAuthenticated, IsAdmin)
+
+class SellerList(generics.ListCreateAPIView):
+  queryset = Seller.objects.all()
+  serializer_class = SellerSerializer
+  name = 'seller-list'
+
+  def create(self, request, *args, **kwargs):
+    if (self.request.user.profile.role != 3):
+      raise serializers.ValidationError({'detail': 'You do not have permission to perform this action'})
+    return super().create(request, *args, **kwargs)
+
+
+class SellerDetail(generics.RetrieveAPIView):
+  queryset = Seller.objects.all()
+  serializer_class = SellerSerializer
+  name = 'seller-detail'
+
+class SellerUpdate(generics.UpdateAPIView):
+  queryset = Seller.objects.all()
+  serializer_class = SellerSerializer
+  name = 'seller-update'
+
+class SellerDestroy(generics.DestroyAPIView):
+  queryset = Seller.objects.all()
+  serializer_class = SellerSerializer
+  name = 'seller-destroy'
