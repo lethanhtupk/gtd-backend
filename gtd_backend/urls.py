@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/v1/', include('watches.urls')),
     # path for user's profile endpoints
     path('api/v1/', include('users.urls')),
+    path('api/v1/', include('products.urls')),
 ]
