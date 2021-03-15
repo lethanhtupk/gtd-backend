@@ -120,6 +120,9 @@ SIMPLE_JWT = {
 
 DJOSER = {
   'USER_CREATE_PASSWORD_RETYPE': True,
+  'SERIALIZERS': {
+    'user': 'users.serializers.UserSerializer'
+  }
 }
 
 AUTH_USER_MODEL = 'users.CustomUser'

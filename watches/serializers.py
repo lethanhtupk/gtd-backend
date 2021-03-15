@@ -84,13 +84,13 @@ class WatchSerializer(serializers.ModelSerializer):
     except Exception as e:
       raise e
 
-class UserSerializer(serializers.ModelSerializer):
-  watches = WatchSerializer(
-    many=True,
-    read_only=True,
-  )
+# class UserSerializer(serializers.ModelSerializer):
+#   watches = WatchSerializer(
+#     many=True,
+#     read_only=True,
+#   )
 
-  class Meta:
-    model = User
-    fields = '__all__'
+#   class Meta:
+#     model = User
+#     fields = '__all__'
 

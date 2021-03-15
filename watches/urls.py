@@ -3,16 +3,6 @@ from watches import views
 
 urlpatterns = [
   path(
-    'products/', 
-    views.ProductList.as_view(), 
-    name=views.ProductList.name
-  ),
-  re_path(
-    'products/(?P<pk>[0-9]+)$',
-    views.ProductDetail.as_view(),
-    name=views.ProductDetail.name
-  ),
-  path(
     'watches/', 
     views.WatchList.as_view(), 
     name=views.WatchList.name
@@ -26,11 +16,6 @@ urlpatterns = [
     'watches/(?P<pk>[0-9]+)$',
     views.WatchDetail.as_view(),
     name=views.WatchDetail.name
-  ),
-  path(
-    'sellers/',
-    views.SellerList.as_view(),
-    name=views.SellerList.name
   ),
   path(
     '',
