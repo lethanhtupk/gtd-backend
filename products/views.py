@@ -89,6 +89,7 @@ class ProductUpdate(generics.UpdateAPIView):
         instance = self.get_object()
         product_id = request.data.get('product_id')
         product_data = get_product_data(product_id)
+
         brief_product_data = shorten_product_data(product_data)
         serializer = ProductSerializer(
             instance=instance, data=brief_product_data)

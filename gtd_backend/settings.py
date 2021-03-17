@@ -106,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# setting for REST_FRAMEWORK 
+# setting for REST_FRAMEWORK
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -119,10 +119,10 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
-  'USER_CREATE_PASSWORD_RETYPE': True,
-  'SERIALIZERS': {
-    'user': 'users.serializers.UserSerializer'
-  }
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SERIALIZERS': {
+        'user': 'users.serializers.UserSerializer'
+    }
 }
 
 AUTH_USER_MODEL = 'users.CustomUser'
