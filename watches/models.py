@@ -1,29 +1,32 @@
 from django.db import models
 from users.models import CustomUser
 from products.models import (
-  Product
+    Product
 )
+
+
 class Watch(models.Model):
-  ACTIVE = 1
-  DELETE = 2
-  STATUS_CHOICES = [(ACTIVE, 'Active'), (DELETE, 'Delete')]
-  product = models.ForeignKey(
-    Product,
-    related_name='watches',
-    on_delete=models.CASCADE,
-  )
-  owner = models.ForeignKey(
-    CustomUser,
-    related_name='watches',
-    on_delete=models.CASCADE,
-  )
-  expected_price = models.FloatField()
-  status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=ACTIVE)
-  created_at = models.DateTimeField(auto_now_add=True)
-  updated_at = models.DateTimeField(auto_now=True)
+    ACTIVE = 1
+    DELETE = 2
+    STATUS_CHOICES = [(ACTIVE, 'Active'), (DELETE, 'Delete')]
+    product = models.ForeignKey(
+        Product,
+        related_name='watches',
+        on_delete=models.CASCADE,
+    )
+    owner = models.ForeignKey(
+        CustomUser,
+        related_name='watches',
+        on_delete=models.CASCADE,
+    )
+    expected_price = models.FloatField()
+    status = models.CharField(
+        max_length=2, choices=STATUS_CHOICES, default=ACTIVE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-  class Meta:
-    ordering = ('-updated_at',)
+    class Meta:
+        ordering = ('-updated_at',)
 
-  def __str__(self):
-    return self.name
+    def __str__(self):
+        return self.name
