@@ -7,9 +7,12 @@ from django.dispatch import receiver
 def create_profile(sender, instance, created, **kwargs):
     if created:
         if instance.is_staff and instance.is_superuser:
-            UserProfile.objects.create(user=instance, role=3)
+            UserProfile.objects.create(
+                user=instance, fullname=instance.fullname, role=3)
         else:
             if instance.is_seller:
-                UserProfile.objects.create(user=instance, role=2)
+                UserProfile.objects.create(
+                    user=instance, fullname=instance.fullname, role=2)
             else:
-                UserProfile.objects.create(user=instance, role=1)
+                UserProfile.objects.create(
+                    user=instance, fullname=instance.fullname, role=1)

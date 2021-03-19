@@ -8,11 +8,11 @@ from users.managers import CustomUserManager
 
 class CustomUser(AbstractUser):
     username = None
+    fullname = models.CharField(max_length=70)
     email = models.EmailField(_('email address'), unique=True)
     is_seller = models.BooleanField(blank=False, null=False, default=False)
-
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['is_seller']
+    REQUIRED_FIELDS = ['is_seller', 'fullname']
 
     objects = CustomUserManager()
 
@@ -26,11 +26,11 @@ class UserProfile(models.Model):
         (SELLER, 'Seller'),
         (ADMIN, 'Admin')
     )
-    fullname = models.CharField(max_length=255, null=True)
+    fullname = models.CharField(max_length=70)
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name='profile')
     photo_url = models.CharField(max_length=255, null=True)
     role = models.PositiveSmallIntegerField(ROLE_CHOICES, default=1)
 
     def __str__(self):
-        return self.user.email
+        return self.user.fullname
