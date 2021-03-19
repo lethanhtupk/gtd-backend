@@ -12,6 +12,11 @@ urlpatterns = [
         views.ProductDetail.as_view(),
         name=views.ProductDetail.name
     ),
+    re_path(
+        'products/(?P<pk>[0-9]+)/update$',
+        views.ProductUpdate.as_view(),
+        name=views.ProductUpdate.name
+    ),
     path(
         'sellers/',
         views.SellerList.as_view(),

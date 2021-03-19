@@ -8,7 +8,7 @@ from watches.serializers import (
 )
 
 
-class ProductCreateSerializer(serializers.Serializer):
+class ProductCreateUpdateSerializer(serializers.Serializer):
     product_id = serializers.CharField(max_length=255)
 
 

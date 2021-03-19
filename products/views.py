@@ -6,7 +6,7 @@ from products.models import (
     Seller,
 )
 from products.serializers import (
-    ProductCreateSerializer, ProductSerializer, SellerSerializer
+    ProductCreateUpdateSerializer, ProductSerializer, SellerSerializer
 )
 from rest_framework.response import Response
 from rest_framework import serializers
@@ -22,7 +22,7 @@ class ProductList(generics.ListCreateAPIView):
 
     def get_serializer_class(self, *args, **kwargs):
         if self.request.method == 'POST':
-            return ProductCreateSerializer
+            return ProductCreateUpdateSerializer
         return ProductSerializer
 
     def create(self, request, *args, **kwargs):
@@ -80,8 +80,28 @@ class ProductDetail(generics.RetrieveAPIView):
                 return super().get(request, *args, **kwargs)
 
 
-class UpdateProduct(generics.UpdateAPIView):
-    pass
+class ProductUpdate(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductCreateUpdateSerializer
+    name = 'product-update'
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        product_id = request.data.get('product_id')
+        product_data = get_product_data(product_id)
+
+        brief_product_data = shorten_product_data(product_data)
+        serializer = ProductSerializer(
+            instance=instance, data=brief_product_data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 
 class ProductDestroy(generics.DestroyAPIView):

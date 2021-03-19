@@ -1,3 +1,4 @@
+from products.models import Seller
 from rest_framework import serializers
 import requests
 
@@ -41,3 +42,15 @@ def shorten_product_data(product_data):
     }
 
     return brief_product_data
+
+
+def shorten_seller_data(seller_data):
+    return {
+        'id': seller_data['id'],
+        'sku': seller_data['sku'],
+        'name': seller_data['name'],
+        'slug': seller_data['slug'],
+        'link': seller_data['link'],
+        'is_best_store': seller_data['is_best_store'],
+        'logo': seller_data['logo'],
+    }
