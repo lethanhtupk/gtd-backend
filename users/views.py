@@ -1,8 +1,9 @@
 
 from rest_framework import (
     generics,
-    serializers
+    serializers,
 )
+from rest_framework.response import Response
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 
@@ -29,11 +30,28 @@ class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'profile-detail'
     permission_classes = (IsAuthenticated, IsAdminOrProfileOwner)
 
-    def perform_update(self, serializer):
-        if self.request.user.profile.role != 3:
-            raise serializers.ValidationError(
-                {'detail': 'You do not have permission to perform this action'})
-        return super().perform_update(serializer)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        if self.request.user.profile.role == 3:
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=partial)
+        else:
+            if request.data.get('role'):
+                raise serializers.ValidationError(
+                    {'detail': 'You do not have permission to perform this action'})
+            else:
+                serializer = self.get_serializer(
+                    instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
     def perform_destroy(self, instance):
         if self.request.user.profile.role != 3:
