@@ -14,4 +14,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('fullname', 'photo_url', 'role')
+        fields = '__all__'
