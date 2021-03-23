@@ -136,7 +136,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # this is the domain name for above ACTIVATION_URL
-DOMAIN = "https://myfrontendsite.com"
+DOMAIN = "myfrontendsite.com"
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
