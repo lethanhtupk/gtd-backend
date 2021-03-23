@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+from gtd_backend import custompermission
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -125,6 +126,11 @@ DJOSER = {
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SERIALIZERS': {
         'user': 'users.serializers.UserSerializer'
+    },
+    'PERMISSIONS': {
+        'user_delete': [custompermission.IsAdmin],
+        'user_list': [custompermission.IsAdmin],
+        'user': [custompermission.IsCurrentUserOwnerOrReadOnly],
     }
 }
 

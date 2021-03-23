@@ -20,12 +20,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path for authentication endpoints
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    # path for watches's app endpoints
     path('api/v1/', include('watches.urls')),
-    # path for user's profile endpoints
     path('api/v1/', include('users.urls')),
     path('api/v1/', include('products.urls')),
 ]
