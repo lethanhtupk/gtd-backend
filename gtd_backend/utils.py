@@ -1,5 +1,6 @@
 from products.models import Seller
 from rest_framework import serializers
+from django.core.mail import EmailMessage
 import requests
 
 
@@ -54,3 +55,9 @@ def shorten_seller_data(seller_data):
         'is_best_store': seller_data['is_best_store'],
         'logo': seller_data['logo'],
     }
+
+
+def send_email(data):
+    email = EmailMessage(to=[data['to_email']],
+                         subject=data['email_subject'], body=data['email_body'])
+    email.send()
