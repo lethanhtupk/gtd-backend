@@ -121,10 +121,22 @@ SIMPLE_JWT = {
 
 DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
+    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SERIALIZERS': {
         'user': 'users.serializers.UserSerializer'
     }
 }
+
+SITE_NAME = 'GetTheDeal'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# this is the domain name for above ACTIVATION_URL
+DOMAIN = "https://myfrontendsite.com"
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
