@@ -18,6 +18,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import CustomUser
 from django.urls import reverse
 from gtd_backend.utils import send_email
+import jwt
+import os
 
 
 # Create your views here.
@@ -58,8 +60,21 @@ class VerifyEmail(generics.GenericAPIView):
 
     name = 'verify-email'
 
-    def get():
-        pass
+    def get(self, request):
+        token = request.GET.get('token')
+
+        try:
+            payload = jwt.decode(token, os.getenv(
+                'SECRET_KEY'), algorithms=["HS256"])
+            user = CustomUser.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'detail': 'Successfully activated email'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Activation link has been expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileList(generics.ListAPIView):
