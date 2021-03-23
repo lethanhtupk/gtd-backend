@@ -21,7 +21,6 @@ class WatchSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_internal_value(self, data):
-        print('RUNNING to_internal_value() METHOD')
         try:
             product_id = data.get('product')
             expected_price = data.get('expected_price')

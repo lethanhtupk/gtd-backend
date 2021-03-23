@@ -58,6 +58,9 @@ def shorten_seller_data(seller_data):
 
 
 def send_email(data):
+    subject = '[GetTheDeal] Xác nhận tài khoản'
+    body = "Xin chào {fullname},\nCảm ơn đã đăng ký sử dụng dịch vụ của chúng tôi!\nChúng tôi cần thêm thông tin để hoàn thành quá trình đăng ký, bao gồm việc xác nhận lại địa chỉ email\nClick vào link bên dưới để xác nhận địa chỉ email của bạn:\n\n{verify_link}\nNếu bạn gặp vấn đề gì, hãy dán đường dẫn trên vào trình duyệt của bạn."
+
     email = EmailMessage(to=[data['to_email']],
-                         subject=data['email_subject'], body=data['email_body'])
+                         subject=subject,  body=body.format(fullname=data['name'], verify_link=data['verify_link']))
     email.send()

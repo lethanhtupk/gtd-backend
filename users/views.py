@@ -4,18 +4,63 @@ from rest_framework import (
     serializers,
 )
 from rest_framework.response import Response
+from rest_framework import status
 from users.models import UserProfile
-from users.serializers import UserProfileSerializer
-
+from users.serializers import (UserProfileSerializer, RegisterSerializer)
+from django.contrib.sites.shortcuts import get_current_site
 # import permission classes
 from gtd_backend.custompermission import (
     IsAdmin,
     IsAdminOrProfileOwner,
 )
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from users.models import CustomUser
+from django.urls import reverse
+from gtd_backend.utils import send_email
 
 
 # Create your views here.
+
+
+class RegisterView(generics.CreateAPIView):
+
+    serializer_class = RegisterSerializer
+    name = 'register'
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        user = CustomUser.objects.get(email=serializer.data.get('email'))
+
+        token = RefreshToken.for_user(user).access_token
+        current_site = get_current_site(request).domain
+        relativeLink = reverse('verify-email')
+
+        absurl = 'http://' + current_site + \
+            relativeLink + '?token=' + str(token)
+
+        data = {
+            'name': user.fullname,
+            'to_email': user.email,
+            'verify_link': absurl,
+        }
+
+        send_email(data)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class VerifyEmail(generics.GenericAPIView):
+
+    name = 'verify-email'
+
+    def get():
+        pass
+
 
 class ProfileList(generics.ListAPIView):
     queryset = UserProfile.objects.all()

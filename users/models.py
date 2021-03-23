@@ -10,11 +10,15 @@ class CustomUser(AbstractUser):
     username = None
     fullname = models.CharField(max_length=70)
     email = models.EmailField(_('email address'), unique=True)
+    is_verified = models.BooleanField(default=False)
     is_seller = models.BooleanField(blank=False, null=False, default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['is_seller', 'fullname']
 
     objects = CustomUserManager()
+
+    def __str__(self) -> str:
+        return self.email
 
 
 class UserProfile(models.Model):
