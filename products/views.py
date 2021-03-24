@@ -13,7 +13,7 @@ from products.serializers import (
 )
 from rest_framework.response import Response
 from rest_framework import serializers
-from gtd_backend.utils import get_product_data, product_data_for_create, shorten_product_data, shorten_seller_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
+from gtd_backend.utils import get_product_data, product_data_for_create, send_email, shorten_product_data, shorten_seller_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
 from rest_framework import status
 # Create your views here.
 
@@ -106,6 +106,27 @@ class ProductDestroy(generics.DestroyAPIView):
     serializer_class = ProductSerializer
     permission_classes = (IsAuthenticated, IsAdmin)
     name = 'product-destroy'
+
+
+class CheckPrice(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductCreateSerializer
+    name = 'check-price'
+
+    def get(self, request, *args, **kwargs):
+        products = Product.objects.all()
+        for product in products:
+            product_price = product.price
+            for watch in product.watches.all():
+                if product_price <= watch.expected_price and watch.status == 1:
+                    # TODO: send_email
+                    send_email(watch.owner.fullname, watch.owner.email, product.name,
+                               product.url_path, product.price)
+                    # TODO: change the status of watch to FINISH
+                    watch.status = 3
+                    watch.save()
+
+        return Response({'detail': 'Successfully check the price and send email to users'}, status=status.HTTP_200_OK)
 
 
 class SellerList(generics.ListCreateAPIView):

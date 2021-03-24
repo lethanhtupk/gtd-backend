@@ -1,6 +1,6 @@
-import products
 from products.models import Seller
 from rest_framework import serializers
+from django.core.mail import EmailMessage
 import requests
 from products.models import (
     Brand,
@@ -142,3 +142,11 @@ def shorten_seller_data(seller_data):
         'is_best_store': seller_data['is_best_store'],
         'logo': seller_data['logo'],
     }
+
+
+def send_email(fullname, email, product_name, url_path, price):
+    absurl = 'https://tiki.vn/' + url_path
+    subject = '[GetTheDeal] Thông báo sản phẩm giảm giá'
+    body = f'Xin chào {fullname} \nSản phẩm bạn đang theo dõi đã giảm đến mức giá mong muốn. Hãy tiến hành mua ngay kẻo lỡ :D\n\nTên sản phẩm: {product_name}\nMức giá hiện tại : {price}\nMua ngay tại đường dẫn sau: {absurl}'
+    email = EmailMessage(subject=subject, body=body, to=[email])
+    email.send()

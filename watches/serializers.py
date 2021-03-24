@@ -42,7 +42,7 @@ class WatchSerializer(serializers.ModelSerializer):
             seller = update_or_create_seller(product_data)
 
             product = update_or_create_product(
-                product_data, brand, brand, category, seller)
+                product_data, brand, category, seller)
 
             update_or_create_images(product_data, product)
 

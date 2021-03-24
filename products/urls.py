@@ -22,7 +22,11 @@ urlpatterns = [
         views.ProductDestroy.as_view(),
         name=views.ProductDestroy.name
     ),
-
+    path(
+        'check-price/',
+        views.CheckPrice.as_view(),
+        name=views.CheckPrice.name
+    ),
     path(
         'sellers/',
         views.SellerList.as_view(),
