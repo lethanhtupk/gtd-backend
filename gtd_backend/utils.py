@@ -1,6 +1,14 @@
+import products
 from products.models import Seller
 from rest_framework import serializers
 import requests
+from products.models import (
+    Brand,
+    Seller,
+    Category,
+    Image,
+    Product
+)
 
 
 def get_product_data(product_id):
@@ -25,10 +33,60 @@ def get_product_data(product_id):
     return response.json()
 
 
+def update_or_create_brand(product_data):
+    brand_data = product_data.get('brand')
+    brand = None
+    if brand_data:
+        brand, brand_created = Brand.objects.update_or_create(
+            **brand_data)
+
+    return brand
+
+
+def update_or_create_seller(product_data):
+    seller_data = product_data.get('current_seller')
+    seller = None
+    if seller_data:
+        brief_seller_data = shorten_seller_data(seller_data)
+        seller, seller_created = Seller.objects.update_or_create(
+            **brief_seller_data
+        )
+
+    return seller
+
+
+def update_or_create_category(product_data):
+    category_data = product_data.get('categories')
+    category = None
+    if category_data:
+        category, category_created = Category.objects.update_or_create(
+            **category_data)
+
+    return category
+
+
+def update_or_create_product(product_data, brand, category, seller):
+    brief_product_data = product_data_for_create(product_data)
+    product, product_created = Product.objects.update_or_create(
+        brand=brand, category=category, seller=seller, **brief_product_data)
+
+    return product
+
+
+def update_or_create_images(product_data, product):
+    images = product_data.get('images')
+    for image in images:
+        Image.objects.update_or_create(product=product, **image)
+
+
 def shorten_product_data(product_data):
+    '''
+    return product data without saving into DB
+    '''
 
     brief_product_data = {
         'id': product_data['id'],
+        'url_path': product_data['url_path'],
         'name': product_data['name'],
         'thumbnail_url': product_data['thumbnail_url'],
         'short_description': product_data['thumbnail_url'],
@@ -41,6 +99,30 @@ def shorten_product_data(product_data):
         'brand': product_data.get('brand'),
         'seller': product_data.get('current_seller'),
         'category': product_data.get('categories'),
+        'images': product_data.get('images'),
+        'description': product_data['description'],
+    }
+
+    return brief_product_data
+
+
+def product_data_for_create(product_data):
+    ''''
+    prepare data for saving into DB
+    '''
+
+    brief_product_data = {
+        'id': product_data['id'],
+        'url_path': product_data['url_path'],
+        'name': product_data['name'],
+        'thumbnail_url': product_data['thumbnail_url'],
+        'short_description': product_data['thumbnail_url'],
+        'price': product_data['price'],
+        'list_price': product_data['list_price'],
+        'discount': product_data['discount'],
+        'discount_rate': product_data['discount_rate'],
+        'rating_average': product_data['rating_average'],
+        'product_group_name': product_data['productset_group_name'],
         'description': product_data['description'],
     }
 
@@ -48,6 +130,9 @@ def shorten_product_data(product_data):
 
 
 def shorten_seller_data(seller_data):
+    '''
+    prepare data for saving seller into DB
+    '''
     return {
         'id': seller_data['id'],
         'sku': seller_data['sku'],
