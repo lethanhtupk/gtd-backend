@@ -16,6 +16,9 @@ class CustomUser(AbstractUser):
 
     objects = CustomUserManager()
 
+    def __str__(self) -> str:
+        return self.fullname
+
 
 class UserProfile(models.Model):
     CUSTOMER = 1

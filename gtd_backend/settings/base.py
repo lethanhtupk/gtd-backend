@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+from gtd_backend import custompermission
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'djoser',
     'rest_framework_simplejwt',
     'rest_framework',
@@ -119,12 +121,39 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7)
 }
 
-DJOSER = {
-    'USER_CREATE_PASSWORD_RETYPE': True,
-    'SERIALIZERS': {
-        'user': 'users.serializers.UserSerializer'
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
     }
 }
+
+DJOSER = {
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SEND_ACTIVATION_EMAIL': True,
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'SERIALIZERS': {
+        'user': 'users.serializers.UserSerializer'
+    },
+    'PERMISSIONS': {
+        'user_delete': [custompermission.IsAdmin],
+        'user_list': [custompermission.IsAdmin],
+        'user': [custompermission.IsCurrentUserOwnerOrReadOnly],
+    }
+}
+
+SITE_NAME = 'GetTheDeal'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# this is the domain name for above ACTIVATION_URL
+DOMAIN = "myfrontendsite.com"
 
 AUTH_USER_MODEL = 'users.CustomUser'
 

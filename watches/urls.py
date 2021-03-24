@@ -17,9 +17,4 @@ urlpatterns = [
         views.WatchDetail.as_view(),
         name=views.WatchDetail.name
     ),
-    path(
-        '',
-        views.ApiRoot.as_view(),
-        name=views.ApiRoot.name
-    )
 ]
