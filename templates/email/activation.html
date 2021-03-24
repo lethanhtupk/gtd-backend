@@ -204,7 +204,7 @@
   </style>
 </head>
 
-{% block subject %} {% blocktrans %}Kích hoạt tài khoản tại {{ site_name }}{% endblocktrans %} {% endblock subject %} 
+{% block subject %} {% blocktrans %}[{{ site_name }}] Kích hoạt tài khoản{% endblocktrans %} {% endblock subject %} 
 {% block html_body %}
 <div style="width: 472px; text-align: left; padding: 45px 64px 32px 64px; border-bottom: 1px solid #c1cfca">
   <img src="https://superpeer.com/logo/logo-notext.png" width="40" />
@@ -215,7 +215,7 @@
   <p style="padding-bottom: 8px">
     Chúng tôi đã nhận được yêu cầu đăng ký tài khoản của bạn và cần xác minh lại tài khoản email!
   </p>
-  <p style="padding-bottom: 32px">Click vào link bên dưới và bắt đầu GET THE DEAL!</p>
+  <p style="padding-bottom: 32px">Click vào link bên dưới để xác minh và bắt đầu GET THE DEAL!</p>
   <a
     href="{{ protocol }}://{{ domain }}/{{ url|safe }}"
     style="
@@ -267,6 +267,7 @@
     and
     <a href="#">Privacy Policy</a>
   </p>
+  <br />
   <p
     class="fine-print inline-block right-0 pr-8 mr-8"
     style="
