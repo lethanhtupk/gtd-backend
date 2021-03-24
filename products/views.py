@@ -108,6 +108,7 @@ class ProductDestroy(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = (IsAuthenticated, IsAdmin)
+    name = 'product-destroy'
 
 
 class SellerList(generics.ListCreateAPIView):

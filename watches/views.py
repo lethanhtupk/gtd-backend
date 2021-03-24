@@ -94,15 +94,3 @@ class WatchDestroy(generics.DestroyAPIView):
     name = 'watch-destroy'
     # TODO: only allow admin to delete watch instance
     permission_classes = (IsAuthenticated, IsAdmin)
-
-
-class ApiRoot(generics.GenericAPIView):
-    name = 'api-root'
-
-    def get(self, request, *args, **kwargs):
-        return Response({
-            'products': reverse(ProductList.name, request=request),
-            'watches': reverse(WatchList.name, request=request),
-            'sellers': reverse(SellerList.name, request=request),
-            'profiles': reverse(ProfileList.name, request=request)
-        })
