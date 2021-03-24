@@ -38,6 +38,9 @@ def shorten_product_data(product_data):
         'discount_rate': product_data['discount_rate'],
         'rating_average': product_data['rating_average'],
         'product_group_name': product_data['productset_group_name'],
+        'brand': product_data.get('brand'),
+        'seller': product_data.get('current_seller'),
+        'category': product_data.get('categories'),
         'description': product_data['description'],
     }
 
