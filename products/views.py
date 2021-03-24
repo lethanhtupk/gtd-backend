@@ -1,17 +1,20 @@
 from rest_framework.permissions import IsAuthenticated
-from gtd_backend.custompermission import IsAdmin
+from gtd_backend.custompermission import IsAdmin, IsAdminOrOwner
 from rest_framework import generics
 from products.models import (
     Product,
     Seller,
+    Brand,
+    Category,
+    Image,
 )
 from products.serializers import (
-    ProductCreateUpdateSerializer, ProductSerializer, SellerSerializer
+    ProductCreateSerializer, ProductSerializer, SellerSerializer
 )
 from rest_framework.response import Response
 from rest_framework import serializers
-import requests
-from gtd_backend.utils import get_product_data, shorten_product_data
+from gtd_backend.utils import get_product_data, product_data_for_create, send_email, shorten_product_data, shorten_seller_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
+from rest_framework import status
 # Create your views here.
 
 
@@ -22,7 +25,7 @@ class ProductList(generics.ListCreateAPIView):
 
     def get_serializer_class(self, *args, **kwargs):
         if self.request.method == 'POST':
-            return ProductCreateUpdateSerializer
+            return ProductCreateSerializer
         return ProductSerializer
 
     def create(self, request, *args, **kwargs):
@@ -32,22 +35,14 @@ class ProductList(generics.ListCreateAPIView):
 
         product_data = get_product_data(product_id)
 
-        brief_product_data = shorten_product_data(product_data)
+        brand = update_or_create_brand(product_data)
+        seller = update_or_create_seller(product_data)
+        category = update_or_create_category(product_data)
 
-        seller = product_data.get('current_seller')
-        obj = None
-        if seller:
-            obj, created = Seller.objects.get_or_create(
-                id=seller['id'],
-                name=seller['name'],
-                link=seller['link'],
-                logo=seller['logo'],
-            )
+        product = update_or_create_product(
+            product_data, brand, category, seller)
 
-        product, created = Product.objects.update_or_create(
-            seller=obj,
-            **brief_product_data,
-        )
+        update_or_create_images(product_data, product)
 
         product_serializer = ProductSerializer(instance=product)
         return Response(product_serializer.data)
@@ -69,7 +64,7 @@ class ProductDetail(generics.RetrieveAPIView):
         if self.request.user.profile.role == 3:
             if not product:
                 raise serializers.ValidationError({'detail': 'Not found'})
-            return super().get(*args, **kwargs)
+            return super().get(request, *args, **kwargs)
         # current user is normal user
         else:
             if not product:
@@ -80,28 +75,30 @@ class ProductDetail(generics.RetrieveAPIView):
                 return super().get(request, *args, **kwargs)
 
 
-class ProductUpdate(generics.UpdateAPIView):
+class ProductUpdate(generics.RetrieveAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductCreateUpdateSerializer
+    serializer_class = ProductSerializer
     name = 'product-update'
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        product_id = request.data.get('product_id')
-        product_data = get_product_data(product_id)
+    def get(self, request, *args, **kwargs):
+        product_id = kwargs.get('pk')
+        try:
+            product = Product.objects.get(pk=product_id)
+            product_data = get_product_data(product_id)
 
-        brief_product_data = shorten_product_data(product_data)
-        serializer = ProductSerializer(
-            instance=instance, data=brief_product_data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+            brand = update_or_create_brand(product_data)
+            seller = update_or_create_seller(product_data)
+            category = update_or_create_category(product_data)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
+            product = update_or_create_product(
+                product_data, brand, category, seller)
 
-        return Response(serializer.data)
+            update_or_create_images(product_data, product)
+
+            return Response(shorten_product_data(product_data), status=status.HTTP_200_OK)
+
+        except:
+            raise serializers.ValidationError({'detail': 'Not found'})
 
 
 class ProductDestroy(generics.DestroyAPIView):
@@ -109,6 +106,27 @@ class ProductDestroy(generics.DestroyAPIView):
     serializer_class = ProductSerializer
     permission_classes = (IsAuthenticated, IsAdmin)
     name = 'product-destroy'
+
+
+class CheckPrice(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductCreateSerializer
+    name = 'check-price'
+
+    def get(self, request, *args, **kwargs):
+        products = Product.objects.all()
+        for product in products:
+            product_price = product.price
+            for watch in product.watches.all():
+                if product_price <= watch.expected_price and watch.status == 1:
+                    # TODO: send_email
+                    send_email(watch.owner.fullname, watch.owner.email, product.name,
+                               product.url_path, product.price)
+                    # TODO: change the status of watch to FINISH
+                    watch.status = 3
+                    watch.save()
+
+        return Response({'detail': 'Successfully check the price and send email to users'}, status=status.HTTP_200_OK)
 
 
 class SellerList(generics.ListCreateAPIView):
@@ -123,19 +141,8 @@ class SellerList(generics.ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
 
-class SellerDetail(generics.RetrieveAPIView):
+class SellerDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
+    permission_classes = (IsAuthenticated)
     name = 'seller-detail'
-
-
-class SellerUpdate(generics.UpdateAPIView):
-    queryset = Seller.objects.all()
-    serializer_class = SellerSerializer
-    name = 'seller-update'
-
-
-class SellerDestroy(generics.DestroyAPIView):
-    queryset = Seller.objects.all()
-    serializer_class = SellerSerializer
-    name = 'seller-destroy'
