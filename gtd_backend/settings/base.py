@@ -135,8 +135,8 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'PASSWORD_RESET_CONFIRM_URL': '#/password-reset/{uid}/{token}',
+    'ACTIVATION_URL': '/activate/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': '/password-reset/{uid}/{token}',
     'SERIALIZERS': {
         'user': 'users.serializers.UserSerializer'
     },
@@ -144,9 +144,12 @@ DJOSER = {
         'user_delete': [custompermission.IsAdmin],
         'user_list': [custompermission.IsAdmin],
         'user': [custompermission.IsCurrentUserOwnerOrReadOnly],
+        'username_reset': [custompermission.IsAdmin],
+        'username_reset_confirm': [custompermission.IsAdmin]
     },
     'EMAIL': {
         'activation': 'users.email.ActivationEmail',
+        'password_reset': 'users.email.PasswordResetEmail',
     }
 }
 
