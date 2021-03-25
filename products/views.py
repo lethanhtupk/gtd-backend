@@ -4,9 +4,6 @@ from rest_framework import generics
 from products.models import (
     Product,
     Seller,
-    Brand,
-    Category,
-    Image,
 )
 from products.serializers import (
     ProductCreateSerializer, ProductSerializer, SellerSerializer

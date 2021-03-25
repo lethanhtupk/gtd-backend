@@ -1,0 +1,87 @@
+{% load i18n %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+</head>
+
+{% block subject %} {% blocktrans %}[{{ site_name }}] Kích hoạt tài khoản{% endblocktrans %} {% endblock subject %} 
+{% block html_body %}
+<div style="width: 472px; text-align: left; padding: 45px 64px 32px 64px; border-bottom: 1px solid #c1cfca">
+  <img src="https://superpeer.com/logo/logo-notext.png" width="40" />
+  <h1 style="font-size: 24px; padding-top: 8px; padding-bottom: 32px">
+    Chúc mừng, <br />
+    bạn đã là thành viên của GetTheDeal!
+  </h1>
+  <p style="padding-bottom: 8px">
+    Chúng tôi đã nhận được yêu cầu đăng ký tài khoản của bạn và cần xác minh lại tài khoản email!
+  </p>
+  <p style="padding-bottom: 32px">Click vào link bên dưới để xác minh và bắt đầu GET THE DEAL!</p>
+  <a
+    href="{{ protocol }}://{{ domain }}/{{ url|safe }}"
+    style="
+      padding: 15px 48px;
+      border: 0;
+      border-radius: 50px;
+      background: #0967d2;
+      background: #188d77;
+      color: #fff;
+      display: inline-block;
+      margin-bottom: 16px;
+      text-decoration: none;
+    "
+  >
+    HOÀN TẤT ĐĂNG KÝ
+  </a>
+  <p style="margin-top: 8px; margin-bottom: 24px">
+    Nếu cần bất cứ trợ giúp nào, lên hệ với chúng tôi tại lethanhtu1551998@gmail.com!
+    <br />
+  </p>
+  <p style="margin-top: 8px; margin-bottom: 16px; font-weight: bold">Team {{site_name}}</p>
+  <div class="social-media">
+    <a href="#" style="margin-right: 16px">
+      <img width="16" height="16" src="https://superpeer.dev/emails/twitter.png" />
+    </a>
+    <a href="https://www.instagram.com/tu_tute15/">
+      <img width="16" height="16" src="https://superpeer.dev/emails/instagram.png" />
+    </a>
+  </div>
+</div>
+<div
+  style="
+    width: 472px;
+    text-align: left;
+    padding: 45px 64px 32px 64px;
+    border-bottom: 1px solid #c1cfca;
+    border: 0;
+    padding-top: 16px;
+    position: relative;
+  "
+>
+  <p class="fine-print pb-8" style="padding-bottom: 32px">
+    Có câu hỏi hay cần giúp đỡ? Tham khảo
+    <a href="https://superpeer.com/superpeer-faq.html">FAQs</a>, hoặc email cho chúng tôi tại
+    <a href="mailto:lethanhtu1551998@gmail.com"> lethanhtu1551998@gmail.com </a>
+  </p>
+  <p style="font-size: 14px; display: inline-block">
+    <a href="#">Terms of Service</a>
+    and
+    <a href="#">Privacy Policy</a>
+  </p>
+  <br />
+  <p
+    class="fine-print inline-block right-0 pr-8 mr-8"
+    style="
+      margin-right: 32px;
+      padding-right: 32px;
+      display: inline-block;
+      position: absolute;
+      right: 0;
+      font-size: 14px;
+    "
+  >
+    GetTheDeal 2021
+  </p>
+</div>
+
+{% endblock html_body %}
