@@ -150,6 +150,7 @@ DJOSER = {
     'EMAIL': {
         'activation': 'users.email.ActivationEmail',
         'password_reset': 'users.email.PasswordResetEmail',
+        'informing': 'users.email.InformingEmail',
     }
 }
 

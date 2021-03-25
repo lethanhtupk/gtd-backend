@@ -12,7 +12,20 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from gtd_backend.utils import get_product_data, product_data_for_create, send_email, shorten_product_data, shorten_seller_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
 from rest_framework import status
+from djoser.conf import settings
+import threading
 # Create your views here.
+
+
+class EmailThread(threading.Thread):
+
+    def __init__(self, email, to):
+        self.to = to
+        self.email = email
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.email.send(self.to)
 
 
 class ProductList(generics.ListCreateAPIView):
@@ -113,16 +126,31 @@ class CheckPrice(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         products = Product.objects.all()
         for product in products:
-            product_price = product.price
+
+            product_data = get_product_data(product.id)
+
+            brand = update_or_create_brand(product_data)
+            category = update_or_create_category(product_data)
+            seller = update_or_create_seller(product_data)
+
+            product = update_or_create_product(
+                product_data, brand, category, seller)
+
+            update_or_create_images(product_data, product)
+
+            product_price = product_data.get('price')
+
+            email_lst = []
             for watch in product.watches.all():
                 if product_price <= watch.expected_price and watch.status == 1:
-                    # TODO: send_email
-                    send_email(watch.owner.fullname, watch.owner.email, product.name,
-                               product.url_path, product.price)
-                    # TODO: change the status of watch to FINISH
+                    email_lst.append(watch.owner.email)
                     watch.status = 3
                     watch.save()
-
+            currency = "{:,}".format(product_price)
+            new_currency = currency.replace(',', '.')
+            context = {'product': product, 'price': new_currency}
+            email = settings.EMAIL.informing(self.request, context)
+            EmailThread(email, email_lst).start()
         return Response({'detail': 'Successfully check the price and send email to users'}, status=status.HTTP_200_OK)
 
 

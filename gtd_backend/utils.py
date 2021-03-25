@@ -38,7 +38,7 @@ def update_or_create_brand(product_data):
     brand = None
     if brand_data:
         brand, brand_created = Brand.objects.update_or_create(
-            **brand_data)
+            id=brand_data.get('id'), defaults=brand_data)
 
     return brand
 
@@ -49,8 +49,7 @@ def update_or_create_seller(product_data):
     if seller_data:
         brief_seller_data = shorten_seller_data(seller_data)
         seller, seller_created = Seller.objects.update_or_create(
-            **brief_seller_data
-        )
+            id=seller_data.get('id'), defaults=seller_data)
 
     return seller
 
@@ -60,7 +59,7 @@ def update_or_create_category(product_data):
     category = None
     if category_data:
         category, category_created = Category.objects.update_or_create(
-            **category_data)
+            id=category_data.get('id'), defaults=category_data)
 
     return category
 
@@ -68,15 +67,16 @@ def update_or_create_category(product_data):
 def update_or_create_product(product_data, brand, category, seller):
     brief_product_data = product_data_for_create(product_data)
     product, product_created = Product.objects.update_or_create(
-        brand=brand, category=category, seller=seller, **brief_product_data)
+        id=product_data.get('id'), defaults={**brief_product_data, 'brand': brand, 'category': category, 'seller': seller})
 
     return product
 
 
 def update_or_create_images(product_data, product):
-    images = product_data.get('images')
+    images = product_data['images']
     for image in images:
-        Image.objects.update_or_create(product=product, **image)
+        Image.objects.update_or_create(
+            product=product, base_url=image['base_url'], defaults=image)
 
 
 def shorten_product_data(product_data):
