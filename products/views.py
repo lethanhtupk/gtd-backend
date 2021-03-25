@@ -103,9 +103,11 @@ class ProductUpdate(generics.RetrieveAPIView):
             product = update_or_create_product(
                 product_data, brand, category, seller)
 
+            serializer = self.get_serializer(product)
+
             update_or_create_images(product_data, product)
 
-            return Response(shorten_product_data(product_data), status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except:
             raise serializers.ValidationError({'detail': 'Not found'})
