@@ -12,6 +12,11 @@ urlpatterns = [
         views.ProfileDetail.as_view(),
         name=views.ProfileDetail.name
     ),
+    path(
+        'profiles/me/',
+        views.CurrentUserProfile.as_view(),
+        name=views.CurrentUserProfile.name
+    ),
     # path(
     #   'watches/',
     #   views.WatchList.as_view(),
