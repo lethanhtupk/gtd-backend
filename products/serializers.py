@@ -52,16 +52,3 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
-
-
-class ProductDetailSerializer(serializers.ModelSerializer):
-
-    watches = WatchSerializer(many=True, read_only=True)
-    images = ImageSerializer(many=True, read_only=True)
-    brand = BrandSerializer(read_only=True)
-    seller = SellerSerializer(read_only=True)
-    category = Category(read_only=True)
-
-    class Meta:
-        model = Product
-        fields = '__all__'

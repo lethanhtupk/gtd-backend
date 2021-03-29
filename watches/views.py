@@ -13,7 +13,7 @@ from gtd_backend.custompermission import (
 
 # serializer classes and model classes
 from watches.serializers import (
-    WatchSerializer,
+    WatchSerializer, WatchUpdateSerializer,
 )
 from watches.models import (
     Watch,
@@ -56,7 +56,7 @@ class WatchList(generics.ListCreateAPIView):
         serializer.save(owner=self.request.user)
 
 
-class WatchDetail(generics.RetrieveUpdateAPIView):
+class WatchDetail(generics.RetrieveAPIView):
     queryset = Watch.objects.all()
     serializer_class = WatchSerializer
     name = 'watch-detail'
@@ -66,24 +66,15 @@ class WatchDetail(generics.RetrieveUpdateAPIView):
         IsAdminOrOwner
     )
 
-    # TODO: owner only can update the status and expected price of a watch
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', True)
-        instance = self.get_object()
-        if request.data.get('product'):
-            raise serializers.ValidationError(
-                {'detail': 'You can only update status and expected_price field'})
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
+class WatchUpdate(generics.UpdateAPIView):
+    queryset = Watch.objects.all()
+    serializer_class = WatchUpdateSerializer
+    name = 'watch-update'
+    permission_classes = (
+        IsAuthenticated,
+        IsAdminOrOwner
+    )
 
 
 class WatchDestroy(generics.DestroyAPIView):
