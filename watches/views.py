@@ -36,12 +36,11 @@ class WatchList(generics.ListCreateAPIView):
 
     # TODO: only owner and admin can get the list of watches
     def list(self, request, *args, **kwargs):
-        if (request.user.profile == 3):
+        if self.request.user.profile.role == 3:
             queryset = self.get_queryset()
         else:
-            queryset = Watch.objects.filter(owner=request.user)
-        serializer = WatchSerializer(queryset, many=True)
-        return Response(serializer.data)
+            queryset = Watch.objects.filter(owner=self.request.user)
+        return super().list(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
