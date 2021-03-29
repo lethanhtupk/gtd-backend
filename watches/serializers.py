@@ -2,11 +2,15 @@ from rest_framework import serializers
 from watches.models import (
     Watch
 )
-
-from django.contrib.auth.models import User
 # third party library
-import requests
-from gtd_backend.utils import get_product_data, product_data_for_create, shorten_seller_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
+from gtd_backend.utils import (
+    get_product_data,
+    update_or_create_brand,
+    update_or_create_category,
+    update_or_create_images,
+    update_or_create_product,
+    update_or_create_seller
+)
 
 
 class WatchSerializer(serializers.ModelSerializer):
