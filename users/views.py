@@ -13,6 +13,7 @@ from gtd_backend.custompermission import (
     IsAdminOrProfileOwner,
 )
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 
 
 # Create your views here.
@@ -22,6 +23,17 @@ class ProfileList(generics.ListAPIView):
     serializer_class = UserProfileSerializer
     name = 'profile-list'
     permission_classes = (IsAuthenticated, IsAdmin)
+
+
+class CurrentUserProfile(generics.GenericAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = (IsAuthenticated,)
+    name = 'profile-me'
+
+    def get(self, request):
+        profile = UserProfile.objects.get(user=self.request.user)
+        serializer = self.get_serializer(instance=profile)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
