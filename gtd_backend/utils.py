@@ -49,7 +49,7 @@ def update_or_create_seller(product_data):
     if seller_data:
         brief_seller_data = shorten_seller_data(seller_data)
         seller, seller_created = Seller.objects.update_or_create(
-            id=seller_data.get('id'), defaults=seller_data)
+            id=brief_seller_data.get('id'), defaults=brief_seller_data)
 
     return seller
 
