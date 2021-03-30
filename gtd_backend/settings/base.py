@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from gtd_backend import custompermission
+from rest_framework import permissions
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -143,11 +144,11 @@ DJOSER = {
         'user': 'users.serializers.UserSerializer'
     },
     'PERMISSIONS': {
-        'user_delete': [custompermission.IsAdmin],
-        'user_list': [custompermission.IsAdmin],
-        'user': [custompermission.IsCurrentUserOwnerOrReadOnly],
-        'username_reset': [custompermission.IsAdmin],
-        'username_reset_confirm': [custompermission.IsAdmin]
+        'user_delete': [permissions.IsAuthenticated, custompermission.IsAdmin],
+        'user_list': [permissions.IsAuthenticated, custompermission.IsAdmin],
+        'user': [permissions.IsAuthenticated, custompermission.IsAdmin],
+        'username_reset': [permissions.IsAuthenticated, custompermission.IsAdmin],
+        'username_reset_confirm': [permissions.IsAuthenticated, custompermission.IsAdmin]
     },
     'EMAIL': {
         'activation': 'users.email.ActivationEmail',
