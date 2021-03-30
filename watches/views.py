@@ -1,6 +1,6 @@
+from django.db.models import query
+from django.http import request
 from users import serializers
-from rest_framework.reverse import reverse
-from rest_framework.response import Response
 from rest_framework import generics
 
 # permission classes
@@ -18,29 +18,18 @@ from watches.serializers import (
 from watches.models import (
     Watch,
 )
-from users.views import (
-    ProfileList,
-)
-from products.views import (
-    ProductList,
-    SellerList,
-)
 # Create your views here.
 
 
 class WatchList(generics.ListCreateAPIView):
-    queryset = Watch.objects.all()
     serializer_class = WatchSerializer
     permission_classes = (IsAuthenticated,)
     name = 'watch-list'
 
-    # TODO: only owner and admin can get the list of watches
-    def list(self, request, *args, **kwargs):
+    def get_queryset(self):
         if self.request.user.profile.role == 3:
-            queryset = self.get_queryset()
-        else:
-            queryset = Watch.objects.filter(owner=self.request.user)
-        return super().list(request, *args, **kwargs)
+            return Watch.objects.all()
+        return Watch.objects.filter(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
