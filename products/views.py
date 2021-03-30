@@ -32,6 +32,8 @@ class ProductList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     permission_classes = (IsAuthenticated, IsAdmin,)
     name = 'product-list'
+    ordering_fields = ('-updated_at',)
+    ordering = ('-updated_at',)
 
     def get_serializer_class(self, *args, **kwargs):
         if self.request.method == 'POST':

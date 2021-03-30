@@ -1,5 +1,3 @@
-from django.db.models import query
-from django.http import request
 from users import serializers
 from rest_framework import generics
 
@@ -18,6 +16,8 @@ from watches.serializers import (
 from watches.models import (
     Watch,
 )
+from django_filters import rest_framework as filters
+from django_filters import AllValuesFilter, DateTimeFilter, NumberFilter
 # Create your views here.
 
 
@@ -25,6 +25,10 @@ class WatchList(generics.ListCreateAPIView):
     serializer_class = WatchSerializer
     permission_classes = (IsAuthenticated,)
     name = 'watch-list'
+    filter_fields = ('status', 'owner')
+    search_fields = ('product__name',)
+    ordering_fields = ('-updated_at')
+    ordering = ('-updated_at')
 
     def get_queryset(self):
         if self.request.user.profile.role == 3:
