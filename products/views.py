@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from gtd_backend.custompermission import IsAdmin, IsAdminOrOwner
+from gtd_backend.custompermission import IsAdmin
 from rest_framework import generics
 from products.models import (
     Product,
@@ -10,7 +10,7 @@ from products.serializers import (
 )
 from rest_framework.response import Response
 from rest_framework import serializers
-from gtd_backend.utils import get_product_data, product_data_for_create, send_email, shorten_product_data, shorten_seller_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
+from gtd_backend.utils import get_product_data, shorten_product_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
 from rest_framework import status
 from djoser.conf import settings
 import threading
