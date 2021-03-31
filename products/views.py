@@ -14,6 +14,7 @@ from gtd_backend.utils import get_product_data, shorten_product_data, update_or_
 from rest_framework import status
 from djoser.conf import settings
 import threading
+from django_filters import rest_framework as filters
 # Create your views here.
 
 
@@ -32,6 +33,8 @@ class ProductList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     permission_classes = (IsAuthenticated, IsAdmin,)
     name = 'product-list'
+    filter_fields = ('category', 'brand', 'seller')
+    search_fields = ('name',)
     ordering_fields = ('-updated_at',)
     ordering = ('-updated_at',)
 
