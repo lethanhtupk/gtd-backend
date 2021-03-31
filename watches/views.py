@@ -1,5 +1,4 @@
-from users import serializers
-from rest_framework import generics
+from rest_framework import generics, serializers
 
 # permission classes
 from rest_framework.permissions import (
@@ -16,12 +15,11 @@ from watches.serializers import (
 from watches.models import (
     Watch,
 )
-from django_filters import rest_framework as filters
-from django_filters import AllValuesFilter, DateTimeFilter, NumberFilter
 # Create your views here.
 
 
 class WatchList(generics.ListCreateAPIView):
+    queryset = Watch.objects.all()
     serializer_class = WatchSerializer
     permission_classes = (IsAuthenticated,)
     name = 'watch-list'
@@ -33,6 +31,12 @@ class WatchList(generics.ListCreateAPIView):
     def get_queryset(self):
         if self.request.user.profile.role == 3:
             return Watch.objects.all()
+        elif self.request.user.profile.role == 2:
+            if self.request.user.profile.seller:
+                return Watch.objects.filter(seller=self.request.user.profile.seller)
+            else:
+                raise serializers.ValidationError(
+                    {'detail': 'Your account haven\'t connected to any seller'})
         return Watch.objects.filter(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
