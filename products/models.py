@@ -9,6 +9,8 @@ class Seller(models.Model):
     link = models.CharField(max_length=255)
     is_best_store = models.BooleanField()
     logo = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -18,6 +20,8 @@ class Brand(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -27,6 +31,8 @@ class Category(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     is_leaf = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ('name',)
@@ -90,3 +96,5 @@ class Image(models.Model):
     medium_url = models.CharField(max_length=255)
     large_url = models.CharField(max_length=255)
     is_gallery = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
