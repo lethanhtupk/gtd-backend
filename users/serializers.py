@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from users.models import CustomUser, Request, UserProfile
@@ -9,6 +10,18 @@ class UserSerializer(serializers.ModelSerializer):
         ref_name = 'CustomUserSerializer'
         model = CustomUser
         fields = ('is_seller', 'fullname')
+
+
+class ShortProfileSerializer(serializers.ModelSerializer):
+
+    email = SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = ('email', 'fullname')
+
+    def get_email(self, obj):
+        return CustomUser.objects.get(profile=obj).email
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -56,11 +69,12 @@ class RequestCreateSerializer(serializers.ModelSerializer):
 
 
 class RequestUpdateSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.user.email')
+    owner = ShortProfileSerializer(read_only=True)
+    seller = SellerSerializer(read_only=True)
 
     class Meta:
         model = Request
-        fields = ('status', 'reject_reason', 'owner',
+        fields = ('status', 'reject_reason', 'owner', 'seller',
                   'created_at', 'updated_at')
 
     def validate(self, attrs):
@@ -73,3 +87,11 @@ class RequestUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'detail': 'You need to provide reason for your rejection'})
         return super().validate(attrs)
+
+    def update(self, instance, validated_data):
+        status = validated_data.get('status')
+        if status == 2:
+            profile = instance.owner
+            profile.seller = instance.seller
+            profile.save()
+        return super().update(instance, validated_data)

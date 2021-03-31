@@ -10,6 +10,8 @@ from products.models import (
     Product
 )
 
+import threading
+
 
 def get_product_data(product_id):
     headers = {
@@ -144,9 +146,12 @@ def shorten_seller_data(seller_data):
     }
 
 
-def send_email(fullname, email, product_name, url_path, price):
-    absurl = 'https://tiki.vn/' + url_path
-    subject = '[GetTheDeal] Thông báo sản phẩm giảm giá'
-    body = f'Xin chào {fullname} \nSản phẩm bạn đang theo dõi đã giảm đến mức giá mong muốn. Hãy tiến hành mua ngay kẻo lỡ :D\n\nTên sản phẩm: {product_name}\nMức giá hiện tại : {price}\nMua ngay tại đường dẫn sau: {absurl}'
-    email = EmailMessage(subject=subject, body=body, to=[email])
-    email.send()
+class EmailThread(threading.Thread):
+
+    def __init__(self, email, to):
+        self.to = to
+        self.email = email
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.email.send(self.to)

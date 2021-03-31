@@ -4,9 +4,9 @@ from rest_framework import (
     serializers,
 )
 from rest_framework.response import Response
-from users.models import CustomUser, Request, UserProfile
+from users.models import Request, UserProfile
 from users.serializers import RequestCreateSerializer, RequestUpdateSerializer, UserProfileSerializer
-
+from products.models import Seller
 # import permission classes
 from gtd_backend.custompermission import (
     IsAdmin,
@@ -14,6 +14,8 @@ from gtd_backend.custompermission import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from djoser.conf import settings
+from gtd_backend.utils import EmailThread
 
 
 # Create your views here.
@@ -81,6 +83,13 @@ class RequestList(generics.ListCreateAPIView):
         if len(Request.objects.filter(owner=self.request.user.profile)) > 0:
             raise serializers.ValidationError(
                 {'detail': 'A user cannot request to connect more than 1 seller'})
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        seller = serializer.data.get('seller')
+        context = {'profile': self.request.user.profile, 'seller': seller}
+        email = settings.EMAIL.receive_request(self.request, context)
+        EmailThread(email, [self.request.user.email]).start()
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -93,8 +102,22 @@ class RequestDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsAdminOrRequestOwner)
     name = 'request-detail'
 
+    # TODO: send an email inform user that the request have been approve or reject
     def update(self, request, *args, **kwargs):
+        status = request.data.get('status')
         if self.request.user.profile.role != 3:
             raise serializers.ValidationError(
                 {'detail': 'You do not have permission to perform this action'})
+
+        request_obj = self.get_object()
+
+        serializer = self.get_serializer(instance=request_obj)
+
+        owner = serializer.data.get('owner')
+        seller = serializer.data.get('seller')
+
+        context = {'status': status, 'owner': owner, 'seller': seller}
+        email = settings.EMAIL.response_request(self.request, context)
+        EmailThread(email, [owner.get('email')]).start()
+
         return super().update(request, *args, **kwargs)

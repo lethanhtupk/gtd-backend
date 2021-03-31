@@ -13,20 +13,8 @@ from rest_framework import serializers
 from gtd_backend.utils import get_product_data, shorten_product_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
 from rest_framework import status
 from djoser.conf import settings
-import threading
-from django_filters import rest_framework as filters
+from gtd_backend.utils import EmailThread
 # Create your views here.
-
-
-class EmailThread(threading.Thread):
-
-    def __init__(self, email, to):
-        self.to = to
-        self.email = email
-        threading.Thread.__init__(self)
-
-    def run(self):
-        self.email.send(self.to)
 
 
 class ProductList(generics.ListCreateAPIView):

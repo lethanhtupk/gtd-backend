@@ -160,6 +160,8 @@ DJOSER = {
         'activation': 'users.email.ActivationEmail',
         'password_reset': 'users.email.PasswordResetEmail',
         'informing': 'users.email.InformingEmail',
+        'receive_request': 'users.email.ReceiveRequestEmail',
+        'response_request': 'user.email.ResponseRequestEmail',
     }
 }
 
