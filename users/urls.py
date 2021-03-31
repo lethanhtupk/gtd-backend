@@ -17,6 +17,17 @@ urlpatterns = [
         views.CurrentUserProfile.as_view(),
         name=views.CurrentUserProfile.name
     ),
+    path(
+        'requests/',
+        views.RequestList.as_view(),
+        name=views.RequestList.name
+    ),
+    re_path(
+        'requests/(?P<pk>[0-9]+)$',
+        views.RequestDetail.as_view(),
+        name=views.RequestDetail.name
+    ),
+
     # path(
     #   'watches/',
     #   views.WatchList.as_view(),
