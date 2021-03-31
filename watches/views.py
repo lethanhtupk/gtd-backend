@@ -33,7 +33,7 @@ class WatchList(generics.ListCreateAPIView):
             return Watch.objects.all()
         elif self.request.user.profile.role == 2:
             if self.request.user.profile.seller:
-                return Watch.objects.filter(seller=self.request.user.profile.seller)
+                return Watch.objects.filter(product__seller=self.request.user.profile.seller)
             else:
                 raise serializers.ValidationError(
                     {'detail': 'Your account haven\'t connected to any seller'})
