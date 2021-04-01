@@ -10,7 +10,7 @@ from products.serializers import (
 )
 from rest_framework.response import Response
 from rest_framework import serializers
-from gtd_backend.utils import get_product_data, shorten_product_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
+from gtd_backend.utils import get_product_data, search_product, shorten_product_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
 from rest_framework import status
 from djoser.conf import settings
 from gtd_backend.utils import EmailThread
@@ -167,3 +167,18 @@ class SellerDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SellerSerializer
     permission_classes = (IsAuthenticated)
     name = 'seller-detail'
+
+
+class FlashSaleProduct(generics.GenericAPIView):
+
+    def get(self, request):
+        pass
+
+
+class SearchProduct(generics.GenericAPIView):
+    name = 'product-search'
+
+    def get(self, request):
+        params = request.query_params
+        data = search_product(params.get('q'), params.get('limit'))
+        return Response(data=data, status=status.HTTP_200_OK)
