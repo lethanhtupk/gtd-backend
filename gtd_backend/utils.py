@@ -69,7 +69,7 @@ def search_product(search_pattern, limit):
         'sec-fetch-dest': 'document',
         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
     }
-
+    print(f"https://tiki.vn/api/v2/products/?limit={limit}&q={search_pattern}")
     response = requests.get(
         f"https://tiki.vn/api/v2/products/?limit={limit}&q={search_pattern}", headers=headers)
     if response.status_code != 200:
