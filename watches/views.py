@@ -1,7 +1,4 @@
-from django.db.models import query
-from django.http import request
-from users import serializers
-from rest_framework import generics
+from rest_framework import generics, serializers
 
 # permission classes
 from rest_framework.permissions import (
@@ -22,13 +19,24 @@ from watches.models import (
 
 
 class WatchList(generics.ListCreateAPIView):
+    queryset = Watch.objects.all()
     serializer_class = WatchSerializer
     permission_classes = (IsAuthenticated,)
     name = 'watch-list'
+    filter_fields = ('status', 'owner')
+    search_fields = ('product__name',)
+    ordering_fields = ('-updated_at')
+    ordering = ('-updated_at')
 
     def get_queryset(self):
         if self.request.user.profile.role == 3:
             return Watch.objects.all()
+        elif self.request.user.profile.role == 2:
+            if self.request.user.profile.seller:
+                return Watch.objects.filter(product__seller=self.request.user.profile.seller)
+            else:
+                raise serializers.ValidationError(
+                    {'detail': 'Your account haven\'t connected to any seller'})
         return Watch.objects.filter(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):

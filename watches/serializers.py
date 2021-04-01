@@ -23,7 +23,12 @@ class WatchSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         status = attrs.get('status')
-        if status == 3:
+        expected_price = attrs.get('expected_price')
+        if int(expected_price) <= 0:
+            raise serializers.ValidationError({
+                'expected_price': 'Cannot equal or smaller than 0'
+            })
+        if int(status) == 3:
             raise serializers.ValidationError(
                 {'status': 'Cannot manually set status of watch to FINISH'})
         return super().validate(attrs)
@@ -34,10 +39,10 @@ class WatchSerializer(serializers.ModelSerializer):
             expected_price = data.get('expected_price')
             if not product_id:
                 raise serializers.ValidationError(
-                    {'product': 'required field'})
+                    {'product': 'this field is required'})
             if not expected_price:
                 raise serializers.ValidationError(
-                    {'expected_price': 'required field'})
+                    {'expected_price': 'this field is required'})
 
             product_data = get_product_data(product_id)
 
@@ -77,7 +82,12 @@ class WatchUpdateSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         status = attrs.get('status')
-        if status == 3:
+        expected_price = attrs.get('expected_price')
+        if int(expected_price) <= 0:
+            raise serializers.ValidationError({
+                'expected_price': 'expected price cannot equal or smaller than 0'
+            })
+        if int(status) == 3:
             raise serializers.ValidationError(
                 {'status': 'Cannot manually change the status of watch to FINISH'})
         return super().validate(attrs)
@@ -85,7 +95,7 @@ class WatchUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         expected_price = validated_data.get(
             'expected_price', instance.expected_price)
-        if expected_price > instance.product.price:
+        if int(expected_price) > int(instance.product.price):
             raise serializers.ValidationError(
                 {'expected_price': 'expected_price cannot be bigger than current price'})
         return super().update(instance, validated_data)

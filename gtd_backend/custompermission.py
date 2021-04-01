@@ -14,6 +14,11 @@ class IsAdminOrOwner(permissions.BasePermission):
         return obj.owner == request.user or request.user.profile.role == 3
 
 
+class IsAdminOrRequestOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.owner == request.user.profile or request.user.profile.role == 3
+
+
 class IsAdminOrProfileOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.user == request.user or request.user.profile.role == 3

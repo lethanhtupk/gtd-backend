@@ -10,28 +10,29 @@ from products.serializers import (
 )
 from rest_framework.response import Response
 from rest_framework import serializers
-from gtd_backend.utils import get_product_data, shorten_product_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
+from gtd_backend.utils import get_product_data, search_product, shorten_product_data, update_or_create_brand, update_or_create_category, update_or_create_images, update_or_create_product, update_or_create_seller
 from rest_framework import status
 from djoser.conf import settings
-import threading
+from gtd_backend.utils import EmailThread
+from django_filters import rest_framework as filters
 # Create your views here.
 
 
-class EmailThread(threading.Thread):
+# class ProductFilter(filters.FilterSet):
 
-    def __init__(self, email, to):
-        self.to = to
-        self.email = email
-        threading.Thread.__init__(self)
-
-    def run(self):
-        self.email.send(self.to)
+#     class Meta:
+#         model = Product
+#         fields = ('category', 'brand', 'seller')
 
 
 class ProductList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     permission_classes = (IsAuthenticated, IsAdmin,)
     name = 'product-list'
+    filter_fields = ('category', 'brand', 'seller')
+    search_fields = ('name',)
+    ordering_fields = ('-updated_at', 'price', 'discount_rate', 'discount')
+    ordering = ('-updated_at',)
 
     def get_serializer_class(self, *args, **kwargs):
         if self.request.method == 'POST':
@@ -87,7 +88,8 @@ class ProductDetail(generics.RetrieveAPIView):
 
 class ProductUpdate(generics.RetrieveAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductCreateSerializer
+    permission_classes = (IsAuthenticated,)
     name = 'product-update'
 
     def get(self, request, *args, **kwargs):
@@ -173,3 +175,12 @@ class SellerDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SellerSerializer
     permission_classes = (IsAuthenticated)
     name = 'seller-detail'
+
+
+class SearchProduct(generics.GenericAPIView):
+    name = 'product-search'
+
+    def get(self, request):
+        params = request.query_params
+        data = search_product(params.get('q'), params.get('limit'))
+        return Response(data=data, status=status.HTTP_200_OK)

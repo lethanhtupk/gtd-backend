@@ -15,3 +15,11 @@ class CustomPasswordResetEmail(PasswordResetEmail):
 
 class InformingEmail(BaseEmailMessage):
     template_name = "email/informing.html"
+
+
+class ReceiveRequestEmail(BaseEmailMessage):
+    template_name = "email/receive_request.html"
+
+
+class ResponseRequestEmail(BaseEmailMessage):
+    template_name = "email/response_request.html"

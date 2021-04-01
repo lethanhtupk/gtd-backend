@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'watches.apps.WatchesConfig',
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -112,8 +113,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # setting for REST_FRAMEWORK
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 12,
+    'DEFAULT_PAGINATION_CLASS': 'gtd_backend.custompagination.CustomPagination',
+    'PAGE_SIZE': 2,
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
+        'rest_framework.filters.SearchFilter',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
@@ -138,8 +144,8 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
-    'ACTIVATION_URL': '/activate/{uid}/{token}',
-    'PASSWORD_RESET_CONFIRM_URL': '/password-reset/{uid}/{token}',
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'SERIALIZERS': {
         'user': 'users.serializers.UserSerializer'
     },
@@ -154,6 +160,8 @@ DJOSER = {
         'activation': 'users.email.ActivationEmail',
         'password_reset': 'users.email.PasswordResetEmail',
         'informing': 'users.email.InformingEmail',
+        'receive_request': 'users.email.ReceiveRequestEmail',
+        'response_request': 'users.email.ResponseRequestEmail',
     }
 }
 
