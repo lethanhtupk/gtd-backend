@@ -10,25 +10,16 @@
 <div style="width: 472px; text-align: left; padding: 45px 64px 32px 64px; border-bottom: 1px solid #c1cfca font-size: 16px;;">
   <img src="https://superpeer.com/logo/logo-notext.png" width="40" />
   <h1 style="font-size: 24px; padding-top: 8px; padding-bottom: 32px">
-    Xin chào, {{ owner.fullname }}
+    Xin chào, {{ owner.fullname }} 
   </h1>
-  <p style="pading-botton: 8px;">Yêu cầu liên kết với cửa hàng của bạn đã được xem xét thành công<b style="font-size: 16px;">{{ product.name }}</b></p>
-  <a
-    href="https://tiki.vn/{{ product.url_path }}"
-    style="
-      padding: 15px 48px;
-      border: 0;
-      border-radius: 50px;
-      background: #0967d2;
-      background: #188d77;
-      color: #fff;
-      display: inline-block;
-      margin-bottom: 16px;
-      text-decoration: none;
-    "
-  >
-    MUA NGAY
-  </a>
+  {% if status.status == 2  %}
+    <p style="pading-botton: 8px;">Yêu cầu liên kết với cửa hàng của bạn đã được duyệt thành công 
+    <br> Từ giờ bạn có thể sử dụng toàn bộ các chức năng cho người bán hàng trong hệ thống của chúng tôi</p>
+  {% elif status.status == 3  %}
+    <p style="pading-botton: 8px;">Yêu cầu liên kết với cửa hàng của bạn đã bị từ chối 
+    <br> Lý do từ chối : <b style="font-size: 16px;">{{ status.reject_reason }}</b></p>
+  {% else %}
+  {% endif %}
   <p style="margin-top: 8px; margin-bottom: 24px">
     Nếu cần bất cứ trợ giúp nào, lên hệ với chúng tôi tại lethanhtu1551998@gmail.com!
     <br />

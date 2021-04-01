@@ -144,8 +144,8 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
-    'ACTIVATION_URL': '/activate/{uid}/{token}',
-    'PASSWORD_RESET_CONFIRM_URL': '/password-reset/{uid}/{token}',
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'SERIALIZERS': {
         'user': 'users.serializers.UserSerializer'
     },
@@ -161,7 +161,7 @@ DJOSER = {
         'password_reset': 'users.email.PasswordResetEmail',
         'informing': 'users.email.InformingEmail',
         'receive_request': 'users.email.ReceiveRequestEmail',
-        'response_request': 'user.email.ResponseRequestEmail',
+        'response_request': 'users.email.ResponseRequestEmail',
     }
 }
 

@@ -65,7 +65,8 @@ class RequestCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = ('seller', 'status', 'created_at', 'updated_at', 'owner')
+        fields = ('id', 'seller', 'status',
+                  'created_at', 'updated_at', 'owner')
 
 
 class RequestUpdateSerializer(serializers.ModelSerializer):
@@ -74,7 +75,7 @@ class RequestUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = ('status', 'reject_reason', 'owner', 'seller',
+        fields = ('id', 'status', 'reject_reason', 'owner', 'seller',
                   'created_at', 'updated_at')
 
     def validate(self, attrs):

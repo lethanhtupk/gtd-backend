@@ -80,7 +80,8 @@ class ProductDetail(generics.RetrieveAPIView):
 
 class ProductUpdate(generics.RetrieveAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductCreateSerializer
+    permission_classes = (IsAuthenticated,)
     name = 'product-update'
 
     def get(self, request, *args, **kwargs):

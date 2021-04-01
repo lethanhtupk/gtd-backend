@@ -6,13 +6,13 @@ from rest_framework import (
 from rest_framework.response import Response
 from users.models import Request, UserProfile
 from users.serializers import RequestCreateSerializer, RequestUpdateSerializer, UserProfileSerializer
-from products.models import Seller
 # import permission classes
 from gtd_backend.custompermission import (
     IsAdmin,
     IsAdminOrProfileOwner, IsAdminOrRequestOwner,
 )
 from rest_framework.permissions import IsAuthenticated
+from products.models import Seller
 from rest_framework import status
 from djoser.conf import settings
 from gtd_backend.utils import EmailThread
@@ -23,8 +23,8 @@ from gtd_backend.utils import EmailThread
 class ProfileList(generics.ListAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    name = 'profile-list'
     permission_classes = (IsAuthenticated, IsAdmin)
+    name = 'profile-list'
 
 
 class CurrentUserProfile(generics.GenericAPIView):
@@ -68,6 +68,8 @@ class RequestList(generics.ListCreateAPIView):
     serializer_class = RequestCreateSerializer
     permission_classes = (IsAuthenticated,)
     filter_fields = ('status', 'seller')
+    ordering_fields = ('-updated_at',)
+    ordering = ('-updated_at',)
     name = 'request-list'
 
     def list(self, request, *args, **kwargs):
@@ -86,8 +88,10 @@ class RequestList(generics.ListCreateAPIView):
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        seller = serializer.data.get('seller')
-        context = {'profile': self.request.user.profile, 'seller': seller}
+        seller_id = serializer.data.get('seller')
+        seller_instance = Seller.objects.get(id=seller_id)
+        context = {'profile': self.request.user.profile,
+                   'seller': seller_instance}
         email = settings.EMAIL.receive_request(self.request, context)
         EmailThread(email, [self.request.user.email]).start()
         return super().create(request, *args, **kwargs)
@@ -104,19 +108,22 @@ class RequestDetail(generics.RetrieveUpdateDestroyAPIView):
 
     # TODO: send an email inform user that the request have been approve or reject
     def update(self, request, *args, **kwargs):
-        status = request.data.get('status')
         if self.request.user.profile.role != 3:
             raise serializers.ValidationError(
                 {'detail': 'You do not have permission to perform this action'})
 
         request_obj = self.get_object()
 
-        serializer = self.get_serializer(instance=request_obj)
+        serializer = self.get_serializer(
+            instance=request_obj)
+        incoming_data = self.get_serializer(data=request.data)
+        incoming_data.is_valid(raise_exception=True)
+        incoming_data.is_valid(raise_exception=True)
 
         owner = serializer.data.get('owner')
         seller = serializer.data.get('seller')
-
-        context = {'status': status, 'owner': owner, 'seller': seller}
+        context = {'status': incoming_data.data,
+                   'owner': owner, 'seller': seller}
         email = settings.EMAIL.response_request(self.request, context)
         EmailThread(email, [owner.get('email')]).start()
 
