@@ -14,7 +14,15 @@ from gtd_backend.utils import get_product_data, search_product, shorten_product_
 from rest_framework import status
 from djoser.conf import settings
 from gtd_backend.utils import EmailThread
+from django_filters import rest_framework as filters
 # Create your views here.
+
+
+# class ProductFilter(filters.FilterSet):
+
+#     class Meta:
+#         model = Product
+#         fields = ('category', 'brand', 'seller')
 
 
 class ProductList(generics.ListCreateAPIView):
@@ -23,7 +31,7 @@ class ProductList(generics.ListCreateAPIView):
     name = 'product-list'
     filter_fields = ('category', 'brand', 'seller')
     search_fields = ('name',)
-    ordering_fields = ('-updated_at',)
+    ordering_fields = ('-updated_at', 'price', 'discount_rate', 'discount')
     ordering = ('-updated_at',)
 
     def get_serializer_class(self, *args, **kwargs):
@@ -167,12 +175,6 @@ class SellerDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SellerSerializer
     permission_classes = (IsAuthenticated)
     name = 'seller-detail'
-
-
-class FlashSaleProduct(generics.GenericAPIView):
-
-    def get(self, request):
-        pass
 
 
 class SearchProduct(generics.GenericAPIView):
