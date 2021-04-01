@@ -38,7 +38,7 @@ urlpatterns = [
         name=views.SellerDetail.name
     ),
     path(
-        'products/search/',
+        'products/search',
         views.SearchProduct.as_view(),
         name=views.SearchProduct.name
     ),
