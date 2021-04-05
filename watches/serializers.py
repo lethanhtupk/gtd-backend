@@ -29,9 +29,6 @@ class WatchSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'expected_price': 'Cannot equal or smaller than 0'
             })
-        if int(status) == 3:
-            raise serializers.ValidationError(
-                {'status': 'Cannot manually set status of watch to FINISH'})
         return super().validate(attrs)
 
     def to_internal_value(self, data):
@@ -85,13 +82,10 @@ class WatchUpdateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         status = attrs.get('status')
         expected_price = attrs.get('expected_price')
-        if int(expected_price) <= 0:
+        if expected_price and int(expected_price) <= 0:
             raise serializers.ValidationError({
                 'expected_price': 'expected price cannot equal or smaller than 0'
             })
-        if int(status) == 3:
-            raise serializers.ValidationError(
-                {'status': 'Cannot manually change the status of watch to FINISH'})
         return super().validate(attrs)
 
     def update(self, instance, validated_data):

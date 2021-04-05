@@ -9,16 +9,15 @@ def increase_watch_count(sender, instance, update_fields=None, **kwargs):
     product = instance.product
     try:
         old_instance = Watch.objects.get(id=instance.id)
+        if old_instance.status != instance.status:
+            if instance.status == 1:
+                product.watch_count = F('watch_count') + 1
+            else:
+                product.watch_count = F('watch_count') - 1
     except Watch.DoesNotExist:
         if instance.status == 1:
             product.watch_count = F('watch_count') + 1
-            product.save()
-
-    if old_instance.status != instance.status:
-        if instance.status == 1:
-            product.watch_count = F('watch_count') + 1
-        product.watch_count = F('watch_count') - 1
-
+    finally:
         product.save()
 
 
