@@ -31,7 +31,8 @@ class ProductList(generics.ListCreateAPIView):
     name = 'product-list'
     filter_fields = ('category', 'brand', 'seller')
     search_fields = ('name',)
-    ordering_fields = ('-updated_at', 'price', 'discount_rate', 'discount')
+    ordering_fields = ('-updated_at', 'price',
+                       'discount_rate', 'discount', 'watch_count', '-watch_count')
     ordering = ('-updated_at',)
 
     def get_serializer_class(self, *args, **kwargs):
@@ -62,7 +63,6 @@ class ProductList(generics.ListCreateAPIView):
 class ProductDetail(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = (IsAuthenticated,)
     name = 'product-detail'
 
     def get(self, request, *args, **kwargs):

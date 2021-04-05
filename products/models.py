@@ -61,6 +61,7 @@ class Product(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
+    watch_count = models.PositiveIntegerField(default=0)
     url_path = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     thumbnail_url = models.URLField(max_length=255)

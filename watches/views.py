@@ -25,7 +25,7 @@ class WatchList(generics.ListCreateAPIView):
     name = 'watch-list'
     filter_fields = ('status', 'owner')
     search_fields = ('product__name',)
-    ordering_fields = ('-updated_at')
+    ordering_fields = ('-updated_at', 'expected_price', '-expected_price')
     ordering = ('-updated_at')
 
     def get_queryset(self):
