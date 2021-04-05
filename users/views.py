@@ -68,7 +68,7 @@ class RequestList(generics.ListCreateAPIView):
     serializer_class = RequestCreateSerializer
     permission_classes = (IsAuthenticated,)
     filter_fields = ('status', 'seller')
-    ordering_fields = ('-updated_at',)
+    ordering_fields = ('-updated_at', 'updated_at')
     ordering = ('-updated_at',)
     name = 'request-list'
 
@@ -82,6 +82,9 @@ class RequestList(generics.ListCreateAPIView):
         if self.request.user.profile.role != 2:
             raise serializers.ValidationError(
                 {'detail': 'You do not have permission to perform this action'})
+        if self.request.user.seller:
+            raise serializers.ValidationError(
+                {'detail': 'Your account already connected with a seller'})
         if len(Request.objects.filter(owner=self.request.user.profile)) > 0:
             raise serializers.ValidationError(
                 {'detail': 'A user cannot request to connect more than 1 seller'})

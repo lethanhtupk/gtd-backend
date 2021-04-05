@@ -9,8 +9,13 @@ urlpatterns = [
     ),
     re_path(
         'products/(?P<pk>[0-9]+)$',
-        views.ProductDetail.as_view(),
-        name=views.ProductDetail.name
+        views.ProductDetailDisplay.as_view(),
+        name=views.ProductDetailDisplay.name
+    ),
+    re_path(
+        'products/(?P<pk>[0-9]+)/manage$',
+        views.ProductDetailManage.as_view(),
+        name=views.ProductDetailManage.name
     ),
     re_path(
         'products/(?P<pk>[0-9]+)/update$',
@@ -36,6 +41,16 @@ urlpatterns = [
         'sellers/(?P<pk>[0-9]+)$',
         views.SellerDetail.as_view(),
         name=views.SellerDetail.name
+    ),
+    re_path(
+        'sellers/(?P<pk>[0-9]+)/update$',
+        views.SellerUpdate.as_view(),
+        name=views.SellerUpdate.name
+    ),
+    re_path(
+        'sellers/(?P<pk>[0-9]+)/destroy$',
+        views.SellerDestroy.as_view(),
+        name=views.SellerDestroy.name
     ),
     path(
         'products/search',

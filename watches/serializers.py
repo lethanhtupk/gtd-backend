@@ -16,6 +16,7 @@ from gtd_backend.utils import (
 class WatchSerializer(serializers.ModelSerializer):
 
     owner = serializers.ReadOnlyField(source='owner.email')
+    lowest_price = serializers.FloatField(read_only=True)
 
     class Meta:
         model = Watch
@@ -70,11 +71,12 @@ class WatchSerializer(serializers.ModelSerializer):
 class WatchUpdateSerializer(serializers.ModelSerializer):
 
     owner = serializers.ReadOnlyField(source='owner.email')
+    lowest_price = serializers.FloatField(read_only=True)
     product = serializers.SerializerMethodField()
 
     class Meta:
         model = Watch
-        fields = ('id', 'owner', 'expected_price',
+        fields = ('id', 'owner', 'expected_price', 'lowest_price',
                   'status', 'created_at', 'updated_at', 'product')
 
     def get_product(self, obj):
@@ -98,4 +100,5 @@ class WatchUpdateSerializer(serializers.ModelSerializer):
         if int(expected_price) > int(instance.product.price):
             raise serializers.ValidationError(
                 {'expected_price': 'expected_price cannot be bigger than current price'})
+        validated_data['lowest_price'] = expected_price
         return super().update(instance, validated_data)

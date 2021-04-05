@@ -8,9 +8,8 @@ from products.models import (
 class Watch(models.Model):
     ACTIVE = 1
     DEACTIVATE = 2
-    FINISH = 3
     STATUS_CHOICES = [(ACTIVE, 'Active'), (DEACTIVATE,
-                                           'Deactivate'), (FINISH, 'Finish')]
+                                           'Deactivate')]
     product = models.ForeignKey(
         Product,
         related_name='watches',
@@ -22,6 +21,7 @@ class Watch(models.Model):
         on_delete=models.CASCADE,
     )
     expected_price = models.FloatField()
+    lowest_price = models.FloatField()
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, default=ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)

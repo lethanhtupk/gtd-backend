@@ -25,18 +25,13 @@ class WatchList(generics.ListCreateAPIView):
     name = 'watch-list'
     filter_fields = ('status', 'owner')
     search_fields = ('product__name',)
-    ordering_fields = ('-updated_at', 'expected_price', '-expected_price')
+    ordering_fields = ('updated_at', '-updated_at',
+                       'expected_price', '-expected_price')
     ordering = ('-updated_at')
 
     def get_queryset(self):
         if self.request.user.profile.role == 3:
             return Watch.objects.all()
-        elif self.request.user.profile.role == 2:
-            if self.request.user.profile.seller:
-                return Watch.objects.filter(product__seller=self.request.user.profile.seller)
-            else:
-                raise serializers.ValidationError(
-                    {'detail': 'Your account haven\'t connected to any seller'})
         return Watch.objects.filter(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -50,7 +45,9 @@ class WatchList(generics.ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        expected_price = serializer.validated_data.get('expected_price')
+        serializer.save(owner=self.request.user,
+                        lowest_price=expected_price)
 
 
 class WatchDetail(generics.RetrieveAPIView):
