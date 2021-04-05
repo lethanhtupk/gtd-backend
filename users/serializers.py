@@ -95,4 +95,5 @@ class RequestUpdateSerializer(serializers.ModelSerializer):
             profile = instance.owner
             profile.seller = instance.seller
             profile.save()
+
         return super().update(instance, validated_data)

@@ -48,10 +48,10 @@ class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         role = request.data.get('role')
         profile_id = kwargs.get('pk')
-        if int(self.request.user.profile.id) == int(profile_id):
+        if int(self.request.user.profile.id) == int(profile_id) and role:
             raise serializers.ValidationError(
                 {'detail': 'You cannot change your own role'})
-        if role and self.request.user.profile.role != 3:
+        if role != None and self.request.user.profile.role != 3:
             raise serializers.ValidationError(
                 {'detail': 'You do not have permission to perform this action'})
         return super().update(request, *args, **kwargs)
@@ -82,7 +82,7 @@ class RequestList(generics.ListCreateAPIView):
         if self.request.user.profile.role != 2:
             raise serializers.ValidationError(
                 {'detail': 'You do not have permission to perform this action'})
-        if self.request.user.seller:
+        if self.request.user.profile.seller:
             raise serializers.ValidationError(
                 {'detail': 'Your account already connected with a seller'})
         if len(Request.objects.filter(owner=self.request.user.profile)) > 0:
@@ -121,7 +121,6 @@ class RequestDetail(generics.RetrieveUpdateDestroyAPIView):
             instance=request_obj)
         incoming_data = self.get_serializer(data=request.data)
         incoming_data.is_valid(raise_exception=True)
-        incoming_data.is_valid(raise_exception=True)
 
         owner = serializer.data.get('owner')
         seller = serializer.data.get('seller')
@@ -129,5 +128,11 @@ class RequestDetail(generics.RetrieveUpdateDestroyAPIView):
                    'owner': owner, 'seller': seller}
         email = settings.EMAIL.response_request(self.request, context)
         EmailThread(email, [owner.get('email')]).start()
+
+        if int(incoming_data.data.get('status')) == 3:
+            profile = request_obj.owner
+            profile.seller = None
+            profile.save()
+            return super().destroy(request, *args, **kwargs)
 
         return super().update(request, *args, **kwargs)

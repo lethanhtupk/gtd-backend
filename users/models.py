@@ -40,7 +40,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(
         CustomUser, on_delete=models.CASCADE, related_name='profile')
     photo_url = models.CharField(max_length=255, null=True)
-    role = models.PositiveSmallIntegerField(ROLE_CHOICES, default=1)
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -68,6 +68,7 @@ class Request(models.Model):
         related_name='request',
     )
     reject_reason = models.TextField(default='')
-    status = models.PositiveSmallIntegerField(STATUS_CHOICES, default=1)
+    status = models.PositiveSmallIntegerField(
+        choices=STATUS_CHOICES, default=1)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
