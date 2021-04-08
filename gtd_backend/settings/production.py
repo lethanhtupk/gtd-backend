@@ -4,7 +4,7 @@ from dj_database_url import config
 
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['gtd-api.herokuapp.com', '127.0.0.1']
 
 DATABASES = {
     'default': dj_database_url.config(
