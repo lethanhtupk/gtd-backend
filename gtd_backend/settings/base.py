@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['gtd-apt-test.eba-uq864qkq.us-west-2.elasticbeanstalk.com']
 
 
 # Application definition
