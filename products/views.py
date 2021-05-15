@@ -6,7 +6,7 @@ from products.models import (
     Seller,
 )
 from products.serializers import (
-    ProductCreateSerializer, ProductNonAuthOrCustomerSerializer, ProductSerializer, SellerSerializer
+    ProductCreateSerializer, ProductNonAuthOrCustomerSerializer, ProductSerializer, SellerSerializer, ProductViewSerializer
 )
 from rest_framework.response import Response
 from rest_framework import serializers
@@ -67,6 +67,15 @@ class ProductList(generics.ListCreateAPIView):
 
         product_serializer = ProductSerializer(instance=product)
         return Response(product_serializer.data)
+
+
+class ProductViewList(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductViewSerializer
+    name = 'product-view-list'
+    ordering_fields = ('-updated_at', 'price',
+                       'discount_rate', 'discount', 'watch_count', '-watch_count')
+    ordering = ('-updated_at',)
 
 
 class ProductDetailDisplay(generics.RetrieveAPIView):

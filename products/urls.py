@@ -57,4 +57,9 @@ urlpatterns = [
         views.SearchProduct.as_view(),
         name=views.SearchProduct.name
     ),
+    path(
+        'products/view',
+        views.ProductViewList.as_view(),
+        name=views.ProductViewList.name
+    ),
 ]

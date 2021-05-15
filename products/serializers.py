@@ -1,5 +1,6 @@
 from django.utils import tree
 from rest_framework import serializers
+from products import models
 from products.models import (
     Brand, Image, Product,
     Seller, Category
@@ -47,6 +48,16 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True, read_only=True)
     brand = BrandSerializer(read_only=True)
     seller = SellerSerializer(read_only=True)
+    category = Category(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class ProductViewSerializer(serializers.ModelSerializer):
+    images = ImageSerializer(many=True, read_only=True)
+    brand = BrandSerializer(read_only=True)
     category = Category(read_only=True)
 
     class Meta:
