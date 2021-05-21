@@ -123,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # setting for REST_FRAMEWORK
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'gtd_backend.custompagination.CustomPagination',
-    'PAGE_SIZE': 2,
+    'PAGE_SIZE': 12,
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter',
@@ -181,8 +181,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
-# this is the domain name for above ACTIVATION_URL
-DOMAIN = "myfrontendsite.com"
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
