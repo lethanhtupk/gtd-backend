@@ -220,5 +220,6 @@ class SearchProduct(generics.GenericAPIView):
     def get(self, request):
         params = request.query_params
         limit = params.get('limit') if params.get('limit') else 48
-        data = search_product(params.get('search'), limit)
+        page = params.get('page') if params.get('page') else 1
+        data = search_product(params.get('search'), limit, page)
         return Response(data=data, status=status.HTTP_200_OK)

@@ -56,7 +56,7 @@ def get_product_data(product_id):
 #     return response.json()
 
 
-def search_product(search_pattern, limit):
+def search_product(search_pattern, limit, page):
     headers = {
         'authority': 'scrapeme.live',
         'dnt': '1',
@@ -69,9 +69,8 @@ def search_product(search_pattern, limit):
         'sec-fetch-dest': 'document',
         'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
     }
-    print(f"https://tiki.vn/api/v2/products/?limit={limit}&q={search_pattern}")
     response = requests.get(
-        f"https://tiki.vn/api/v2/products/?limit={limit}&q={search_pattern}", headers=headers)
+        f"https://tiki.vn/api/v2/products/?limit={limit}&q={search_pattern}&page={page}", headers=headers)
     if response.status_code != 200:
         raise serializers.ValidationError(
             {'detail': "Something went wrong"})
