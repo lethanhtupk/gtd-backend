@@ -15,6 +15,9 @@ from watches.serializers import (
 from watches.models import (
     Watch,
 )
+from products.models import (
+    Product
+)
 # Create your views here.
 
 
@@ -45,9 +48,9 @@ class WatchList(generics.ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        expected_price = serializer.validated_data.get('expected_price')
+        product = serializer.validated_data.get('product')
         serializer.save(owner=self.request.user,
-                        lowest_price=expected_price)
+                        lowest_price=product.price)
 
 
 class WatchDetail(generics.RetrieveAPIView):
