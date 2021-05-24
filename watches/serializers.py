@@ -89,10 +89,11 @@ class WatchUpdateSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
     def update(self, instance, validated_data):
+
         expected_price = validated_data.get(
             'expected_price', instance.expected_price)
         if int(expected_price) > int(instance.product.price):
             raise serializers.ValidationError(
                 {'expected_price': 'expected_price cannot be bigger than current price'})
-        validated_data['lowest_price'] = expected_price
+        validated_data['lowest_price'] = instance.product.price
         return super().update(instance, validated_data)
