@@ -5,7 +5,7 @@ from dj_database_url import config
 DEBUG = False
 
 # this is the domain name for above ACTIVATION_URL
-DOMAIN = "myfrontendsite.com"
+DOMAIN = "get-the-deal.web.app"
 
 ALLOWED_HOSTS = ['gtd-api.herokuapp.com', '127.0.0.1']
 
