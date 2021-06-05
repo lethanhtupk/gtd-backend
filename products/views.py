@@ -170,7 +170,7 @@ class CheckPrice(generics.ListAPIView):
 
             email_lst = []
             for watch in product.watches.all():
-                if product_price <= watch.expected_price and product_price <= watch.lowest_price and watch.status == 1:
+                if product_price <= watch.expected_price and product_price <= watch.lowest_price and int(watch.status) == 1:
                     email_lst.append(watch.owner.email)
                     watch.lowest_price = product_price
                     watch.save()
