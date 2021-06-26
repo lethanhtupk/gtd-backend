@@ -8,8 +8,9 @@ from products.models import (
 class Watch(models.Model):
     ACTIVE = 1
     DEACTIVATE = 2
+    DELETE = 3
     STATUS_CHOICES = [(ACTIVE, 'Active'), (DEACTIVATE,
-                                           'Deactivate')]
+                                           'Deactivate'), (DELETE, 'Delete')]
     product = models.ForeignKey(
         Product,
         related_name='watches',

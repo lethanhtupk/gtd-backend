@@ -35,7 +35,7 @@ class WatchList(generics.ListCreateAPIView):
     def get_queryset(self):
         if self.request.user.profile.role == 3:
             return Watch.objects.all()
-        return Watch.objects.filter(owner=self.request.user)
+        return Watch.objects.filter(owner=self.request.user).exclude(status=3)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
