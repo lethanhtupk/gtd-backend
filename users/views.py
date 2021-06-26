@@ -64,7 +64,6 @@ class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class RequestList(generics.ListCreateAPIView):
-    queryset = Request.objects.all()
     serializer_class = RequestCreateSerializer
     permission_classes = (IsAuthenticated,)
     filter_fields = ('status', 'seller')
@@ -72,11 +71,13 @@ class RequestList(generics.ListCreateAPIView):
     ordering = ('-updated_at',)
     name = 'request-list'
 
-    def list(self, request, *args, **kwargs):
-        if self.request.user.profile.role != 3:
-            raise serializers.ValidationError(
-                {'detail': 'You do not have permission to perform this action'})
-        return super().list(request, *args, **kwargs)
+    def get_queryset(self):
+        if self.request.user.profile.role == 3:
+            return Request.objects.all()
+        elif self.request.user.profile.role == 2:
+            return Request.objects.filter(owner=self.request.user.profile)
+        raise serializers.ValidationError(
+            {'detail': 'You do not have permission to perform this action'}) 
 
     def create(self, request, *args, **kwargs):
         if self.request.user.profile.role != 2:
