@@ -42,7 +42,7 @@ class WatchList(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         product = serializer.data.get('product')
         watches = Watch.objects.filter(product=product, owner=request.user)
-        if len(watches) > 0:
+        if len(watches) > 0 and int(watches[0].status) != 3:
             raise serializers.ValidationError(
                 {'product': 'Cannot create 2 watches with the same product ID'})
         return super().create(request, *args, **kwargs)
@@ -54,7 +54,7 @@ class WatchList(generics.ListCreateAPIView):
 
 
 class WatchDetail(generics.RetrieveAPIView):
-    queryset = Watch.objects.all()
+    # queryset = Watch.objects.all()
     serializer_class = WatchSerializer
     name = 'watch-detail'
     # TODO: only admin and owner able to view, update detail of watch
@@ -63,7 +63,10 @@ class WatchDetail(generics.RetrieveAPIView):
         IsAdminOrOwner
     )
 
-
+    def get_queryset(self):
+        if (self.request.user.profile.role != 3):
+            return Watch.objects.filter(owner=self.request.user).exclude(status=3)
+        return Watch.objects.all()
 class WatchUpdate(generics.UpdateAPIView):
     queryset = Watch.objects.all()
     serializer_class = WatchUpdateSerializer
