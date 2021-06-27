@@ -185,6 +185,7 @@ class CheckPrice(generics.ListAPIView):
 class SellerList(generics.ListCreateAPIView):
     queryset = Seller.objects.all()
     serializer_class = SellerSerializer
+    search_fields = ('name',)
     name = 'seller-list'
 
     def create(self, request, *args, **kwargs):
