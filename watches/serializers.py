@@ -50,11 +50,11 @@ class WatchSerializer(serializers.ModelSerializer):
 
             brand = update_or_create_brand(product_data)
             category = update_or_create_category(product_data)
-            seller = update_or_create_seller(product_data)
-
+            seller = None
+            if(product_data.get('seller')):
+                seller = update_or_create_seller(product_data)
             product = update_or_create_product(
                 product_data, brand, category, seller)
-
             update_or_create_images(product_data, product)
 
             data['product'] = product_data['id']
