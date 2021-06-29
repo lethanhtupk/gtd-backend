@@ -33,7 +33,7 @@ class ProductList(generics.ListCreateAPIView):
             return Product.objects.all()
         elif self.request.user.profile.role == 2:
             if self.request.user.profile.seller:
-                return Product.objects.filter(seller=self.request.user.profile.seller)
+                return Product.objects.filter(seller__id=self.request.user.profile.seller.id)
             else:
                 raise serializers.ValidationError(
                     {'detail': 'You haven\'t connected to any seller yet'})
