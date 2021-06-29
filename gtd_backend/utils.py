@@ -178,13 +178,13 @@ def shorten_seller_data(seller_data):
     prepare data for saving seller into DB
     '''
     return {
-        'id': seller_data['id'],
-        'sku': seller_data['sku'],
-        'name': seller_data['name'],
-        'slug': seller_data['slug'],
-        'link': seller_data['link'],
-        'is_best_store': seller_data['is_best_store'],
-        'logo': seller_data['logo'],
+        'id': seller_data.get('id'),
+        'sku': seller_data.get('sku'),
+        'name': seller_data.get('name'),
+        'slug': seller_data.get('slug'),
+        'link': seller_data.get('link'),
+        'is_best_store': seller_data.get('is_best_store'),
+        'logo': seller_data.get('logo'),
     }
 
 
